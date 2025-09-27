@@ -30,40 +30,70 @@ const PointOfSale = () => {
 
   // Add product to cart
   const addToCart = (product) => {
+    if (product.stock <= 0) {
+      toast.warn("This item is out of stock");
+      return;
+    }
+
     setCart((prevCart) => {
       const existing = prevCart.find((item) => item.id === product.id);
       if (existing) {
-        if (existing.qty < product.stock) {
-          return prevCart.map((item) =>
-            item.id === product.id ? { ...item, qty: item.qty + 1 } : item
-          );
-        } else {
-          toast.warn("No more stock available for this item");
-          return prevCart;
-        }
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
       } else {
-        return [...prevCart, { ...product, qty: 1 }];
+        return [
+          ...prevCart,
+          { id: product.id, name: product.name, price: product.price, qty: 1 },
+        ];
       }
     });
+
+    // Reduce stock in products
+    setProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.id === product.id ? { ...p, stock: p.stock - 1 } : p
+      )
+    );
   };
 
-  // Increase quantity (respect stock)
+  // Increase quantity
   const increaseQty = (id) => {
     setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id && item.qty < item.stock
-          ? { ...item, qty: item.qty + 1 }
-          : item
-      )
+      prevCart.map((item) => {
+        const product = products.find((p) => p.id === id);
+        if (item.id === id && product && product.stock > 0) {
+          // Deduct from stock
+          setProducts((prevProducts) =>
+            prevProducts.map((p) =>
+              p.id === id ? { ...p, stock: p.stock - 1 } : p
+            )
+          );
+          return { ...item, qty: item.qty + 1 };
+        }
+        return item;
+      })
     );
   };
 
   // Decrease quantity
   const decreaseQty = (id) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) => (item.id === id ? { ...item, qty: item.qty - 1 } : item))
-        .filter((item) => item.qty > 0)
+    setCart(
+      (prevCart) =>
+        prevCart
+          .map((item) => {
+            if (item.id === id && item.qty > 0) {
+              // Add back stock
+              setProducts((prevProducts) =>
+                prevProducts.map((p) =>
+                  p.id === id ? { ...p, stock: p.stock + 1 } : p
+                )
+              );
+              return { ...item, qty: item.qty - 1 };
+            }
+            return item;
+          })
+          .filter((item) => item.qty > 0) // remove if qty=0
     );
   };
 
@@ -92,12 +122,18 @@ const PointOfSale = () => {
             products.map((item) => (
               <motion.div
                 key={item.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-b from-lightternary to-lightprimary dark:from-darkternary
-                dark:to-darkprimary text-white p-5 rounded-lg shadow-md flex flex-col justify-between
-                min-h-[200px] md:min-h-[300px] transition cursor-pointer"
-                onClick={() => addToCart(item)}
+                whileHover={{ scale: item.stock > 0 ? 1.05 : 1 }}
+                whileTap={{ scale: item.stock > 0 ? 0.95 : 1 }}
+                className={`bg-gradient-to-b from-lightternary to-lightprimary 
+                  dark:from-darkternary dark:to-darkprimary text-white p-5 
+                  rounded-lg shadow-md flex flex-col justify-between
+                  min-h-[200px] md:min-h-[300px] transition cursor-pointer
+                  ${
+                    item.stock <= 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:shadow-lg"
+                  }`}
+                onClick={() => item.stock > 0 && addToCart(item)}
               >
                 <div className="flex-1 flex flex-col items-center justify-center">
                   <BsCup className="text-4xl text-black dark:text-white" />
@@ -116,7 +152,7 @@ const PointOfSale = () => {
                     className="absolute bottom-0 right-0 text-xs bg-lightprimary dark:bg-darkprimary 
                       text-black dark:text-white rounded-full px-3 py-1"
                   >
-                    Stock: {item.stock}
+                    {item.stock > 0 ? `Stock: ${item.stock}` : "Out of Stock"}
                   </span>
                 </div>
               </motion.div>

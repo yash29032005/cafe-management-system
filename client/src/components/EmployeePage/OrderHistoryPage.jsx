@@ -73,10 +73,6 @@ const OrderHistoryPage = () => {
                         <span className="font-bold">{order.customerName}</span>
                       </p>
                     </div>
-
-                    <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                      Completed
-                    </span>
                   </div>
 
                   {/* Table */}
