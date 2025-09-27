@@ -101,7 +101,7 @@ const NavBar = () => {
               className="px-4 py-2 rounded-md hover:opacity-90 transition text-black
         dark:text-white bg-lightsecondary dark:bg-darksecondary"
             >
-              <span className="font-bold">{user}</span>
+              <span className="font-bold">{user.name}</span>
               <span className="text-lg">⌄</span>
             </button>
 
@@ -160,7 +160,7 @@ const NavBar = () => {
                 className="px-4 py-2 rounded-md hover:opacity-90 transition text-black
               dark:text-white bg-lightsecondary dark:bg-darksecondary"
               >
-                {user}
+                {user.name}
               </Link>
               {openProfileModal && (
                 <ProfileModal onClose={() => setOpenProfileModal(false)} />
@@ -168,7 +168,6 @@ const NavBar = () => {
             </div>
           ) : (
             <Link
-              to={`/loginpage`}
               onClick={openLogin}
               className="px-4 py-2 rounded-md hover:opacity-90 transition text-black
         dark:text-white bg-lightsecondary dark:bg-darksecondary"

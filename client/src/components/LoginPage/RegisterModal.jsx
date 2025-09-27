@@ -5,7 +5,7 @@ import { UserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const RegisterModal = ({ onClose, openLogin }) => {
-  const { setUser, role, setRole, setUserId } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,20 +22,20 @@ const RegisterModal = ({ onClose, openLogin }) => {
         },
         { withCredentials: true }
       );
+
+      const loggedInUser = result.data.user;
+      setUser(loggedInUser);
       setName("");
       setEmail("");
       setPassword("");
       toast.success(result.data.message);
-      setUserId(result.data.user.id);
-      setUser(result.data.user.name);
-      setRole(result.data.user.role);
       onClose();
 
-      if (role === "employee") {
+      if (loggedInUser.role === "employee") {
         navigate("/employee");
-      } else if (role === "manager") {
+      } else if (loggedInUser.role === "manager") {
         navigate("/manager");
-      } else if (role === "admin") {
+      } else if (loggedInUser.role === "admin") {
         navigate("/admin");
       }
     } catch (err) {

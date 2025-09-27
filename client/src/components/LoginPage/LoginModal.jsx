@@ -5,7 +5,7 @@ import { UserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const LoginModal = ({ onClose, openRegister }) => {
-  const { setUser, role, setRole, setUserId } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -20,21 +20,19 @@ const LoginModal = ({ onClose, openRegister }) => {
         },
         { withCredentials: true }
       );
+
+      const loggedInUser = result.data.user;
+
+      setUser(loggedInUser);
       setEmail("");
       setPassword("");
       toast.success(result.data.message);
-      setUserId(result.data.user.id);
-      setUser(result.data.user.name);
-      setRole(result.data.user.role);
       onClose();
 
-      if (role === "employee") {
-        navigate("/employee");
-      } else if (role === "manager") {
-        navigate("/manager");
-      } else if (role === "admin") {
-        navigate("/admin");
-      }
+      // Navigate based on role
+      if (loggedInUser.role === "employee") navigate("/employee");
+      else if (loggedInUser.role === "manager") navigate("/manager");
+      else if (loggedInUser.role === "admin") navigate("/admin");
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong");

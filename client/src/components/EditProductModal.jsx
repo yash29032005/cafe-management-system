@@ -1,6 +1,43 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 
-const AddEmployeeModal = ({ onClose }) => {
+const EditProductModal = ({ onClose, item, setProducts }) => {
+  const id = item.id;
+  const [name, setName] = useState(item.name);
+  const [category, setCategory] = useState(item.category);
+  const [price, setPrice] = useState(item.price);
+
+  const handleEdit = async () => {
+    try {
+      const result = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/product/${id}`,
+        {
+          name,
+          category,
+          price,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setName("");
+      setCategory("");
+      setPrice("");
+      toast.success(result.data.message);
+
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === id ? { ...p, name, category, price } : p
+        )
+      );
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
   return (
     <>
       <div
@@ -17,10 +54,13 @@ const AddEmployeeModal = ({ onClose }) => {
           <div className="flex justify-between items-center border-b border-gray-700 pb-2">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-bold text-black dark:text-white">
-                Add Employee
+                Edit Product Details
               </h2>
             </div>
-            <button className="text-gray-400 hover:text-white transition duration-200 text-lg">
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition duration-200 text-lg"
+            >
               ✕
             </button>
           </div>
@@ -28,12 +68,14 @@ const AddEmployeeModal = ({ onClose }) => {
           {/* Body */}
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
             <label htmlFor="name" className="text-sm ms-1 font-bold">
-              Employee Name
+              Product Name
             </label>
             <input
               id="name"
               type="text"
-              placeholder="Enter file name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter product name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
             />
@@ -45,31 +87,25 @@ const AddEmployeeModal = ({ onClose }) => {
             <input
               id="category"
               type="text"
-              placeholder="Enter file name"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Enter Category"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
             />
           </div>
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
-            <label htmlFor="role" className="text-sm ms-1 font-bold">
-              Role
+            <label htmlFor="price" className="text-sm ms-1 font-bold">
+              Price
             </label>
             <input
-              id="role"
+              id="price"
               type="text"
-              placeholder="Enter file name"
-              required
-              className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
-            />
-          </div>
-          <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
-            <label htmlFor="salary" className="text-sm ms-1 font-bold">
-              Salary
-            </label>
-            <input
-              id="salary"
-              type="text"
-              placeholder="Enter file name"
+              value={price}
+              onChange={(e) => {
+                setPrice(e.target.value);
+              }}
+              placeholder="Enter price"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
             />
@@ -84,10 +120,11 @@ const AddEmployeeModal = ({ onClose }) => {
               Cancel
             </button>
             <button
+              onClick={() => handleEdit(item)}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >
-              Add
+              Confirm
             </button>
           </div>
         </div>
@@ -96,4 +133,4 @@ const AddEmployeeModal = ({ onClose }) => {
   );
 };
 
-export default AddEmployeeModal;
+export default EditProductModal;

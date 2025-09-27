@@ -1,6 +1,6 @@
 import React from "react";
 
-const RemoveEmployeeModal = ({ onClose }) => {
+const RemoveEmployeeModal = ({ onClose, emp }) => {
   return (
     <>
       <div
@@ -28,7 +28,7 @@ const RemoveEmployeeModal = ({ onClose }) => {
           {/* Body */}
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
             <p className="text-sm ms-1 font-bold">
-              Are you sure you want to remove the employee?
+              Are you sure you want to remove {emp.name}?
             </p>
           </div>
 

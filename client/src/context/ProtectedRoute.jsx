@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
 const ProtectedRoute = ({ children, roles }) => {
-  const { user, role, loading } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
 
   if (loading) return <p>Loading...</p>;
 
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, roles }) => {
     return <Navigate to="/loginpage" replace />;
   }
 
-  if (roles && !roles.includes(role)) {
+  if (roles && !roles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 

@@ -1,6 +1,39 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 
-const EditProductModal = ({ onClose }) => {
+const AddProductModal = ({ onClose, setProducts }) => {
+  const [name, setName] = useState(null);
+  const [category, setCategory] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [stock, setStock] = useState(null);
+
+  const handleInsert = async () => {
+    try {
+      const result = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/product`,
+        {
+          name,
+          category,
+          price,
+          stock,
+        },
+        { withCredentials: true }
+      );
+      setName("");
+      setCategory("");
+      setPrice("");
+      setStock("");
+      onClose();
+      toast.success(result.data.message);
+
+      setProducts((prev) => [...prev, result.data.product]);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Order failed");
+    }
+  };
+
   return (
     <>
       <div
@@ -17,7 +50,7 @@ const EditProductModal = ({ onClose }) => {
           <div className="flex justify-between items-center border-b border-gray-700 pb-2">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-bold text-black dark:text-white">
-                Edit Product Details
+                Add Product
               </h2>
             </div>
             <button className="text-gray-400 hover:text-white transition duration-200 text-lg">
@@ -33,6 +66,8 @@ const EditProductModal = ({ onClose }) => {
             <input
               id="name"
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
@@ -45,18 +80,39 @@ const EditProductModal = ({ onClose }) => {
             <input
               id="category"
               type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
             />
           </div>
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
-            <label htmlFor="salary" className="text-sm ms-1 font-bold">
+            <label htmlFor="price" className="text-sm ms-1 font-bold">
               Price
             </label>
             <input
-              id="salary"
-              type="text"
+              id="price"
+              type="number"
+              value={price}
+              min={0}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Enter file name"
+              required
+              className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
+            />
+          </div>
+
+          <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
+            <label htmlFor="stock" className="text-sm ms-1 font-bold">
+              Stock
+            </label>
+            <input
+              id="stock"
+              type="number"
+              min={0}
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
               placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
@@ -72,10 +128,11 @@ const EditProductModal = ({ onClose }) => {
               Cancel
             </button>
             <button
+              onClick={handleInsert}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >
-              Confirm
+              Add
             </button>
           </div>
         </div>
@@ -84,4 +141,4 @@ const EditProductModal = ({ onClose }) => {
   );
 };
 
-export default EditProductModal;
+export default AddProductModal;

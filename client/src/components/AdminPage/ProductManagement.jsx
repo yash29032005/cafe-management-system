@@ -1,40 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import { CiShoppingCart } from "react-icons/ci";
 import { BsCup } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa6";
 import { FaMinus } from "react-icons/fa";
 import RemoveProductModal from "../RemoveProductModal";
-import AddProductModal from "../AddProductModal";
-import EditProductModal from "../EditEmployeeModal";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { useEffect } from "react";
+import AddProductModal from "../AdminPage/AddProductModal";
+import EditProductModal from "../EditProductModal";
+import { ProductContext } from "../../context/ProductContext";
 
 const ProductManagement = () => {
   const [openRemoveProductModal, setOpenRemoveProductModal] = useState(false);
   const [openAddProductModal, setOpenAddProductModal] = useState(false);
   const [openEditProductModal, setOpenEditProductModal] = useState(false);
 
-  const [product, setProduct] = useState([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/product`,
-          {
-            withCredentials: true,
-          }
-        );
-        setProduct(result.data.product);
-      } catch (error) {
-        console.error(error);
-        toast.error(error.response?.data?.message || "Something went wrong");
-      }
-    };
-    fetchProducts();
-  }, []);
+  const { products, setProducts } = useContext(ProductContext);
 
   return (
     <>
@@ -65,6 +45,7 @@ const ProductManagement = () => {
             </p>
             {openAddProductModal && (
               <AddProductModal
+                setProducts={setProducts}
                 onClose={() => {
                   setOpenAddProductModal(false);
                 }}
@@ -74,7 +55,7 @@ const ProductManagement = () => {
 
           {/* Product Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {product.map((item) => (
+            {products.map((item) => (
               <div
                 key={item.id}
                 className="bg-gradient-to-b from-lightternary to-lightprimary
@@ -94,7 +75,7 @@ const ProductManagement = () => {
                     {item.category}
                   </p>
                   <p className="mt-1 font-semibold text-black dark:text-white">
-                    ${item.price.toFixed(2)}
+                    ${item.price}
                   </p>
                   <span
                     className="absolute bottom-0 right-0 text-xs bg-lightprimary dark:bg-darkprimary 
@@ -104,7 +85,7 @@ const ProductManagement = () => {
                   </span>
                   <span
                     onClick={() => {
-                      setOpenEditProductModal(true);
+                      setOpenEditProductModal(item);
                     }}
                     className="absolute top-0 right-10 text-xs bg-lightsecondary dark:bg-darksecondary text-black 
     dark:text-white rounded-md px-4 py-2 cursor-pointer hover:opacity-80 transition"
@@ -113,6 +94,8 @@ const ProductManagement = () => {
                   </span>
                   {openEditProductModal && (
                     <EditProductModal
+                      item={openEditProductModal}
+                      setProducts={setProducts}
                       onClose={() => {
                         setOpenEditProductModal(false);
                       }}
@@ -120,7 +103,7 @@ const ProductManagement = () => {
                   )}
                   <span
                     onClick={() => {
-                      setOpenRemoveProductModal(true);
+                      setOpenRemoveProductModal(item);
                     }}
                     className="absolute top-0 right-0 text-xs bg-lightsecondary dark:bg-darksecondary
                     text-black dark:text-white rounded-full px-2 py-2"
@@ -129,6 +112,7 @@ const ProductManagement = () => {
                   </span>
                   {openRemoveProductModal && (
                     <RemoveProductModal
+                      item={openRemoveProductModal}
                       onClose={() => {
                         setOpenRemoveProductModal(false);
                       }}

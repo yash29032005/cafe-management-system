@@ -1,6 +1,27 @@
-import React from "react";
+import React, { useContext } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { UserContext } from "../../context/UserContext";
 
-const RequestStockModal = ({ onClose, products }) => {
+const RequestStockModal = ({ onClose, product }) => {
+  const productId = product.id;
+  const { user } = useContext(UserContext);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/stock`,
+        { product_id: productId, employee_id: user.id },
+        { withCredentials: true }
+      );
+      onClose();
+      toast.success("Stock request sent!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to send request");
+    }
+  };
   return (
     <>
       <div
@@ -33,19 +54,14 @@ const RequestStockModal = ({ onClose, products }) => {
             <label htmlFor="product" className="text-sm ms-1 font-bold">
               Product Name
             </label>
-            <select
+            <p
               id="product"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary 
                text-black dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
             >
-              <option value="">-- Select a Product --</option>
-              {products.map((product, index) => (
-                <option key={index} value={product}>
-                  {product}
-                </option>
-              ))}
-            </select>
+              {product.name}
+            </p>
           </div>
 
           {/* Footer */}
@@ -57,6 +73,7 @@ const RequestStockModal = ({ onClose, products }) => {
               Cancel
             </button>
             <button
+              onClick={handleSubmit}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >

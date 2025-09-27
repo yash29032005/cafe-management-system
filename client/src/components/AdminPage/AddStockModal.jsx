@@ -38,7 +38,7 @@ const AddStockModal = ({ onClose, product }) => {
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary 
                text-black dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
             >
-              {product}
+              {product.name}
             </p>
           </div>
 

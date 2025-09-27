@@ -1,6 +1,33 @@
-import React from "react";
+import axios from "axios";
+import React, { useContext } from "react";
+import { toast } from "react-toastify";
+import { ProductContext } from "../context/ProductContext";
 
-const RemoveProductModal = ({ onClose }) => {
+const RemoveProductModal = ({ onClose, item }) => {
+  const { setProducts } = useContext(ProductContext);
+
+  const handleDelete = async () => {
+    try {
+      const result = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/product/${item.id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      toast.success(result.data.message);
+
+      // Remove the deleted product from state
+      setProducts((prevProducts) =>
+        prevProducts.filter((p) => p.id !== item.id)
+      );
+
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
   return (
     <>
       <div
@@ -20,7 +47,10 @@ const RemoveProductModal = ({ onClose }) => {
                 Remove Product
               </h2>
             </div>
-            <button className="text-gray-400 hover:text-white transition duration-200 text-lg">
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition duration-200 text-lg"
+            >
               ✕
             </button>
           </div>
@@ -28,7 +58,7 @@ const RemoveProductModal = ({ onClose }) => {
           {/* Body */}
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
             <p className="text-sm ms-1 font-bold">
-              Are you sure you want to remove the product?
+              Are you sure you want to remove the product?({item.name})
             </p>
           </div>
 
@@ -41,6 +71,7 @@ const RemoveProductModal = ({ onClose }) => {
               Cancel
             </button>
             <button
+              onClick={handleDelete}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >

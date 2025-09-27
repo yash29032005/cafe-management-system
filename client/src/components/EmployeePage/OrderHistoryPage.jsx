@@ -1,38 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { CiClock2 } from "react-icons/ci";
-import axios from "axios";
+import { OrderContext } from "../../context/OrderContext";
 
 const OrderHistoryPage = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/order`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (res.data.success) {
-          setOrders(res.data.orders);
-        }
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+  const { orders, loading } = useContext(OrderContext);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-500">Loading orders...</p>
+        <p className="text-lightgrey dark:text-darkgrey">Loading orders...</p>
       </div>
     );
   }
@@ -51,7 +27,7 @@ const OrderHistoryPage = () => {
 
         {/* Orders List */}
         {orders.length === 0 ? (
-          <p className="text-gray-500">No orders found.</p>
+          <p className="text-gray-500">No orders found</p>
         ) : (
           <div className="flex flex-col gap-5">
             {orders.map((order) => {

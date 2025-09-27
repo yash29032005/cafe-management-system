@@ -3,18 +3,38 @@ import { FaPlus } from "react-icons/fa6";
 import { FaMinus } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
 import EditEmployeeModal from "./EditEmployeeModal";
-import AddEmployeeModal from "./AddEmployeeModal";
 import RemoveEmployeeModal from "./RemoveEmployeeModal";
-
-const employees = [
-  { id: 1, name: "Raj", role: "Waiter", salary: 20000 },
-  { id: 2, name: "Darshan", role: "Cashier", salary: 10000 },
-];
+import { useContext } from "react";
+import { UserContext } from "../../context/UserContext";
+import { useEffect } from "react";
+import axios from "axios";
 
 const EmployeeManagement = () => {
+  const { employees } = useContext(UserContext);
   const [openEditEmployeeModal, setOpenEditEmployeeModal] = useState(false);
-  const [openAddEmployeeModal, setOpenAddEmployeeModal] = useState(false);
   const [openRemoveEmployee, setOpenRemoveEmployee] = useState(false);
+
+  const [ordersMap, setOrdersMap] = useState({});
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const result = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/order/count`,
+          { withCredentials: true }
+        );
+        const map = {};
+        result.data.orders.forEach((o) => {
+          map[o.user_id] = o.total;
+        });
+        setOrdersMap(map);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   return (
     <>
@@ -27,25 +47,10 @@ const EmployeeManagement = () => {
           className="bg-lightsecondary dark:bg-darksecondary h-full rounded-lg 
         overflow-y-auto p-5"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center mb-4">
             <p className="flex items-center gap-2 text-xl md:text-2xl text-black dark:text-white font-semibold">
               <IoPersonOutline className="text-md" /> Employees
             </p>
-            <p
-              onClick={() => setOpenAddEmployeeModal(true)}
-              className="flex items-center gap-2 text-xs text-black dark:text-white bg-gradient-to-b from-lightternary to-lightprimary 
-                dark:from-darkternary dark:to-darkprimary rounded-md px-4 py-2 hover:opacity-90"
-            >
-              <FaPlus className="text-sm" />
-              Add Employee
-            </p>
-            {openAddEmployeeModal && (
-              <AddEmployeeModal
-                onClose={() => {
-                  setOpenAddEmployeeModal(false);
-                }}
-              />
-            )}
           </div>
           <div className="flex flex-col gap-3">
             {employees.map((emp) => (
@@ -71,20 +76,22 @@ const EmployeeManagement = () => {
                     ₹{emp.salary}
                   </p>
                 </div>
-                <div className="me-3">
-                  <span className="text-xs px-2 py-1 rounded-full bg-lightsecondary dark:bg-darkprimary text-black dark:text-white">
-                    0 orders
-                  </span>
-                </div>
-                <div className="me-3">
+                {emp.role === "employee" ? (
+                  <div className="me-3">
+                    <span className="text-xs px-2 py-1 rounded-full bg-lightsecondary dark:bg-darkprimary text-black dark:text-white">
+                      {ordersMap[emp.id] ?? 0} orders
+                    </span>
+                  </div>
+                ) : null}
+                {/* <div className="me-3">
                   <span className="text-xs px-2 py-1 rounded-full bg-lightsecondary dark:bg-darkprimary text-black dark:text-white">
                     Active
                   </span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-2">
                   <span
                     onClick={() => {
-                      setOpenEditEmployeeModal(true);
+                      setOpenEditEmployeeModal(emp);
                     }}
                     className="text-xs bg-lightsecondary dark:bg-darksecondary text-black 
     dark:text-white rounded-md px-4 py-2 cursor-pointer hover:opacity-80 transition"
@@ -93,14 +100,16 @@ const EmployeeManagement = () => {
                   </span>
                   {openEditEmployeeModal && (
                     <EditEmployeeModal
-                      emp={emp}
+                      emp={openEditEmployeeModal}
                       onClose={() => {
                         setOpenEditEmployeeModal(false);
                       }}
                     />
                   )}
                   <span
-                    onClick={() => setOpenRemoveEmployee(true)}
+                    onClick={() => {
+                      setOpenRemoveEmployee(emp);
+                    }}
                     className="text-xs bg-lightsecondary dark:bg-darksecondary text-black 
     dark:text-white rounded-full p-2 cursor-pointer hover:opacity-80 transition"
                   >
@@ -108,6 +117,7 @@ const EmployeeManagement = () => {
                   </span>
                   {openRemoveEmployee && (
                     <RemoveEmployeeModal
+                      emp={openRemoveEmployee}
                       onClose={() => {
                         setOpenRemoveEmployee(false);
                       }}

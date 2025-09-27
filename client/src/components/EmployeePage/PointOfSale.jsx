@@ -1,32 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { CiShoppingCart } from "react-icons/ci";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { BsCup } from "react-icons/bs";
-import axios from "axios";
 import { toast } from "react-toastify";
 import PaymentModal from "./PaymentModal";
+import { ProductContext } from "../../context/ProductContext";
 
 const PointOfSale = () => {
-  const [products, setProducts] = useState([]);
+  const { products, setProducts, loading } = useContext(ProductContext);
   const [cart, setCart] = useState([]);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/product`,
-          { withCredentials: true }
-        );
-        setProducts(result.data.product || []);
-      } catch (error) {
-        console.error(error);
-        toast.error(error.response?.data?.message || "Something went wrong");
-      }
-    };
-    fetchProducts();
-  }, []);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lightgrey dark:text-darkgrey">Loading orders...</p>
+      </div>
+    );
+  }
 
   // Add product to cart
   const addToCart = (product) => {

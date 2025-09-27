@@ -5,7 +5,7 @@ import { UserContext } from "../../context/UserContext";
 
 const PaymentModal = ({ onClose, cart, setCart }) => {
   const [customerName, setCustomerName] = useState("");
-  const { userId } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [paymentMethod, setPaymentMethod] = useState("");
 
   const placeOrder = async () => {
@@ -13,7 +13,7 @@ const PaymentModal = ({ onClose, cart, setCart }) => {
       const result = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/order/create`,
         {
-          userId,
+          user: user.id,
           customerName,
           cart,
           paymentMethod,

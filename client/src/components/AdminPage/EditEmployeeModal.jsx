@@ -1,6 +1,47 @@
+import axios from "axios";
 import React from "react";
+import { useContext } from "react";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { UserContext } from "../../context/UserContext";
 
-const EditEmployeeModal = ({ onClose }) => {
+const EditEmployeeModal = ({ onClose, emp }) => {
+  const { setEmployees } = useContext(UserContext);
+  const id = emp.id;
+  const [name, setName] = useState(emp.name);
+  const [salary, setSalary] = useState(emp.salary);
+  const [role, setRole] = useState(emp.role);
+
+  const handleEdit = async () => {
+    try {
+      const result = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/employee/${id}`,
+        {
+          name,
+          salary,
+          role,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setName("");
+      setSalary("");
+      setRole("");
+      toast.success(result.data.message);
+
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((e) =>
+          e.id === id ? { ...e, name, salary, role } : e
+        )
+      );
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
   return (
     <>
       <div
@@ -33,18 +74,8 @@ const EditEmployeeModal = ({ onClose }) => {
             <input
               id="name"
               type="text"
-              placeholder="Enter file name"
-              required
-              className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
-            />
-          </div>
-          <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
-            <label htmlFor="category" className="text-sm ms-1 font-bold">
-              Category
-            </label>
-            <input
-              id="category"
-              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
@@ -57,6 +88,8 @@ const EditEmployeeModal = ({ onClose }) => {
             <input
               id="role"
               type="text"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
               placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
@@ -68,7 +101,9 @@ const EditEmployeeModal = ({ onClose }) => {
             </label>
             <input
               id="salary"
-              type="text"
+              type="number"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
               placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
@@ -84,10 +119,11 @@ const EditEmployeeModal = ({ onClose }) => {
               Cancel
             </button>
             <button
+              onClick={handleEdit}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >
-              Confirm
+              Edit
             </button>
           </div>
         </div>
