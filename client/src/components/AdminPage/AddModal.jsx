@@ -1,6 +1,20 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
 
-const AddStockModal = ({ onClose, product }) => {
+const AddModal = ({ onClose, product }) => {
+  const product_quantity = product.stock;
+  const [quantity, setQuantity] = useState(0);
+
+  const addStock = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/stock`, {
+        withCredentials: true,
+      });
+    } catch (err) {
+      console.error("Error fetching requests:", err);
+    }
+  };
+
   return (
     <>
       <div
@@ -44,14 +58,17 @@ const AddStockModal = ({ onClose, product }) => {
 
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
             <label htmlFor="salary" className="text-sm ms-1 font-bold">
-              Product Quantity
+              Product Quantity: {product_quantity}
             </label>
             <input
               id="salary"
               type="number"
+              value={quantity}
+              onChange={(e) => {
+                setQuantity(e.target.value);
+              }}
               min={0}
-              placeholder="Enter file name"
-              required
+              placeholder="Enter Quantity"
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
             />
           </div>
@@ -64,12 +81,13 @@ const AddStockModal = ({ onClose, product }) => {
             >
               Cancel
             </button>
-            <button
+            <buttonget
+              onClick={addStock}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >
               Add
-            </button>
+            </buttonget>
           </div>
         </div>
       </div>
@@ -77,4 +95,4 @@ const AddStockModal = ({ onClose, product }) => {
   );
 };
 
-export default AddStockModal;
+export default AddModal;

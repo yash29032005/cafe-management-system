@@ -1,25 +1,27 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { UserContext } from "../../context/UserContext";
 
 const RequestStockModal = ({ onClose, product }) => {
-  const productId = product.id;
   const { user } = useContext(UserContext);
+  const productId = product.id;
+  const employeeId = user.id;
+  const [quantity, setQuantity] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/stock`,
-        { product_id: productId, employee_id: user.id },
+      const result = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/stock/request`,
+        { productId, employeeId, quantity },
         { withCredentials: true }
       );
       onClose();
-      toast.success("Stock request sent!");
+      toast.success(result.data.message);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to send request");
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
   return (
@@ -62,6 +64,22 @@ const RequestStockModal = ({ onClose, product }) => {
             >
               {product.name}
             </p>
+          </div>
+          <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
+            <label htmlFor="quantity" className="text-sm ms-1 font-bold">
+              Quantity
+            </label>
+            <input
+              id="quantity"
+              type="number"
+              value={quantity}
+              min={0}
+              placeholder="Enter quantity to request"
+              onChange={(e) => setQuantity(e.target.value)}
+              required
+              className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary 
+               text-black dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
           </div>
 
           {/* Footer */}

@@ -1,28 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { BsCup } from "react-icons/bs";
-import AddStockModal from "./AddStockModal";
-import axios from "axios";
+import AddModal from "./AddModal";
+import CheckRequestModal from "./CheckRequestModal";
+import { ProductContext } from "../../context/ProductContext";
 
 const StockRequest = () => {
-  const [openAddStockModal, setOpenAddStockModal] = useState(null);
-  const [requests, setRequests] = useState([]);
-
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/stock`,
-          { withCredentials: true }
-        );
-        setRequests(result.data.requests || []);
-      } catch (err) {
-        console.error("Error fetching requests:", err);
-      }
-    };
-
-    fetchRequests(); // ✅ actually call the function
-  }, []);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openCheckRequestModal, setOpenCheckRequestModal] = useState(false);
+  const { products } = useContext(ProductContext);
 
   return (
     <div
@@ -33,14 +19,31 @@ const StockRequest = () => {
         className="bg-lightsecondary dark:bg-darksecondary h-full rounded-lg 
         overflow-y-auto p-5"
       >
-        <p className="mb-4 flex items-center gap-2 text-xl md:text-2xl text-black dark:text-white font-semibold">
-          <BsCup className="text-md" /> Stock Requests
-        </p>
+        <div className="relative">
+          <div className="flex justify-between mb-4">
+            <p className="flex items-center gap-2 text-xl md:text-2xl text-black dark:text-white font-semibold">
+              <BsCup className="text-md" /> Stock Requests
+            </p>
+
+            <p
+              onClick={() => setOpenCheckRequestModal((prev) => !prev)}
+              className="flex items-center text-xs text-black dark:text-white bg-gradient-to-b from-lightternary to-lightprimary 
+                          dark:from-darkternary dark:to-darkprimary rounded-md px-4 py-2 hover:opacity-90"
+            >
+              Check Requests
+            </p>
+          </div>
+          {openCheckRequestModal ? (
+            <CheckRequestModal
+              onClose={() => setOpenCheckRequestModal(false)}
+            />
+          ) : null}
+        </div>
 
         <div className="flex flex-col gap-3">
-          {requests.map((req) => (
+          {products.map((pro) => (
             <div
-              key={req.id}
+              key={pro.id}
               className="bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary text-white px-5 py-3 
                 rounded-lg shadow-md flex flex-row items-center justify-between"
@@ -55,38 +58,34 @@ const StockRequest = () => {
               {/* Request details */}
               <div className="flex-1">
                 <p className="font-bold text-md text-black dark:text-white">
-                  {req.product_name}
+                  {pro.name}
                 </p>
-                <p className="text-xs opacity-80 text-lightgrey dark:text-darkgrey -mt-1">
-                  Requested by: {req.employee_name}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-black dark:text-white">
-                  Status: {req.status}
+                <p className="mt-1 text-sm font-semibold text-lightgrey dark:text-darkgrey">
+                  Stock: {pro.stock}
                 </p>
               </div>
 
               <div className="flex items-center">
                 <span
-                  onClick={() => setOpenAddStockModal(req)}
+                  onClick={() => setOpenAddModal(pro)}
                   className="text-xs bg-lightsecondary dark:bg-darksecondary text-black 
                   dark:text-white rounded-full p-2 cursor-pointer hover:opacity-80 transition flex items-center gap-1"
                 >
                   <FaPlus />
-                  Action
+                  Add
                 </span>
+                {/* Modal */}
+                {openAddModal && (
+                  <AddModal
+                    product={openAddModal}
+                    onClose={() => setOpenAddModal(null)}
+                  />
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Modal */}
-      {openAddStockModal && (
-        <AddStockModal
-          product={openAddStockModal}
-          onClose={() => setOpenAddStockModal(null)}
-        />
-      )}
     </div>
   );
 };

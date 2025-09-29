@@ -48,7 +48,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchAllEmployee = async () => {
       try {
         const result = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/auth/me`,
@@ -56,7 +56,6 @@ export const UserProvider = ({ children }) => {
         );
 
         const fetchedUser = result.data.user;
-        setUser(fetchedUser);
 
         // ✅ only fetch employees if manager/admin
         if (fetchedUser?.role === "manager" || fetchedUser?.role === "admin") {
@@ -64,30 +63,17 @@ export const UserProvider = ({ children }) => {
             `${import.meta.env.VITE_API_URL}/api/employee/all`,
             { withCredentials: true }
           );
-          setEmployees(empResult.data.users || []);
-        }
-
-        if (fetchedUser) {
-          if (fetchedUser.role === "employee") {
-            navigate("/employee");
-          } else if (fetchedUser.role === "manager") {
-            navigate("/manager");
-          } else if (fetchedUser.role === "admin") {
-            navigate("/admin");
-          }
-        } else {
-          setUser(null);
+          setEmployees(empResult.data.employees || []);
         }
       } catch (err) {
-        setUser(null);
+        setEmployees(null);
         console.log(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchAllEmployee();
   }, []);
 
   return (

@@ -35,7 +35,10 @@ const EmployeeManagement = () => {
     >
       <div className="bg-lightsecondary dark:bg-darksecondary h-full rounded-lg overflow-y-auto p-5">
         <div className="flex items-center justify-between mb-4">
-          <p className="flex items-center text-xl md:text-2xl text-black dark:text-white font-semibold">
+          <p
+            className="flex items-center gap-2 text-xl md:text-2xl text-black dark:text-white font-semibold 
+            btn btn-light"
+          >
             <IoPersonOutline className="text-md" /> Employees
           </p>
         </div>
