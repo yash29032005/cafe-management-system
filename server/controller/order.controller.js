@@ -1,4 +1,4 @@
-const db = require("../config/db");
+const pool = require("../config/db");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ exports.createOrder = async (req, res) => {
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
     // insert into orders
-    const [orderResult] = await db.query(
+    const [orderResult] = await pool.query(
       "INSERT INTO orders (user_id, customer_name, total, payment_method) VALUES (?, ?, ?, ?)",
       [userId, customerName, total, paymentMethod]
     );
@@ -16,44 +16,42 @@ exports.createOrder = async (req, res) => {
 
     // insert items + reduce stock
     for (const item of cart) {
-      const [[product]] = await db.query(
+      const [[product]] = await pool.query(
         "SELECT stock FROM products WHERE id = ?",
         [item.id]
       );
       if (!product || product.stock < item.qty) {
         return res.status(400).json({
-          success: false,
           message: `Not enough stock for ${item.name}`,
         });
       }
 
-      await db.query(
+      await pool.query(
         "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)",
         [orderId, item.id, item.qty, item.price]
       );
 
-      await db.query("UPDATE products SET stock = stock - ? WHERE id = ?", [
+      await pool.query("UPDATE products SET stock = stock - ? WHERE id = ?", [
         item.qty,
         item.id,
       ]);
     }
 
     res.status(201).json({
-      success: true,
       orderId,
       message: "Order placed successfully",
     });
   } catch (error) {
-    console.error("Error in createOrder:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Error in orders controller:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 exports.getOrder = async (req, res) => {
   try {
-    const userId = req.user.id; // from JWT (protect middleware)
+    const userId = req.user.id;
 
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `SELECT 
           o.id AS orderId,
           o.user_id,
@@ -68,7 +66,7 @@ exports.getOrder = async (req, res) => {
        JOIN order_items oi ON o.id = oi.order_id
        JOIN products p ON oi.product_id = p.id
        WHERE o.user_id = ?
-       ORDER BY o.created_at DESC`,
+       ORDER BY o.created_at DESC, oi.id ASC`,
       [userId]
     );
 
@@ -93,11 +91,28 @@ exports.getOrder = async (req, res) => {
       });
     });
 
-    const orders = Object.values(ordersMap);
+    // sort orders by createdAt (most recent first)
+    const orders = Object.values(ordersMap).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
-    res.status(200).json({ success: true, orders });
+    res.status(200).json({ orders });
   } catch (error) {
-    console.error("Error fetching orders:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch orders" });
+    console.error("Error in orders controller:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
+
+exports.getOrdersCount = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT user_id, COUNT(id) AS total 
+      FROM orders 
+      GROUP BY user_id
+    `);
+    res.status(200).json({ orders: rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
 };

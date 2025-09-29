@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const pool = require("../config/db");
 
-exports.protect = (req, res, next) => {
+exports.protect = async (req, res, next) => {
   try {
     const token = req.cookies.token;
 
@@ -10,10 +11,20 @@ exports.protect = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+    // Fetch user from DB
+    const [rows] = await pool.query(
+      "SELECT id, name, email, role FROM employees WHERE id=?",
+      [decoded.id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = rows[0];
     next();
   } catch (error) {
-    console.error("Error in protect middlesware:", error);
+    console.error("Error in protect middleware:", error);
     return res.status(401).json({ message: "Not authorized, invalid token" });
   }
 };

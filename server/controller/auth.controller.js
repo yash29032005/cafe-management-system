@@ -14,7 +14,7 @@ exports.login = async (req, res) => {
 
     const { email, password } = req.body;
 
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+    const [rows] = await pool.query("SELECT * FROM employees WHERE email = ?", [
       email,
     ]);
     if (rows.length === 0) {
@@ -31,12 +31,7 @@ exports.login = async (req, res) => {
     generateCookie(res, existingUser);
 
     return res.status(200).json({
-      user: {
-        id: existingUser.id,
-        name: existingUser.name,
-        email: existingUser.email,
-        role: existingUser.role,
-      },
+      user: existingUser,
       message: "User logged in successfully",
     });
   } catch (error) {
@@ -52,12 +47,7 @@ exports.me = async (req, res) => {
     }
 
     res.json({
-      user: {
-        id: req.user.id,
-        name: req.user.name,
-        email: req.user.email,
-        role: req.user.role,
-      },
+      user: req.user,
       message: "User authenticated successfully",
     });
   } catch (error) {
@@ -75,7 +65,7 @@ exports.register = async (req, res) => {
     const { name, email, password } = req.body;
 
     const [existingUser] = await pool.query(
-      "SELECT * FROM users WHERE email=?",
+      "SELECT * FROM employees WHERE email=?",
       [email]
     );
     if (existingUser.length > 0) {
@@ -85,11 +75,11 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await pool.query(
-      "INSERT INTO users(name,email,password) VALUES (?,?,?)",
+      "INSERT INTO employees(name,email,password) VALUES (?,?,?)",
       [name, email, hashedPassword]
     );
 
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+    const [rows] = await pool.query("SELECT * FROM employees WHERE email = ?", [
       email,
     ]);
     if (rows.length === 0) {

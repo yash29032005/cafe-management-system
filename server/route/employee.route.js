@@ -2,19 +2,17 @@ const express = require("express");
 const { authorizeRoles } = require("../middleware/authorizedRoles");
 const { protect } = require("../middleware/getAuth");
 const {
-  createOrder,
-  getOrder,
-  getOrdersCount,
-} = require("../controller/order.controller");
+  getAllEmployees,
+  editEmployee,
+} = require("../controller/employee.controller");
 const router = express.Router();
 
-router.post("/create", protect, authorizeRoles("employee"), createOrder);
-router.get("/", protect, authorizeRoles("employee", "admin"), getOrder);
 router.get(
-  "/count",
+  "/all",
   protect,
   authorizeRoles("manager", "admin"),
-  getOrdersCount
+  getAllEmployees
 );
+router.put("/:id", protect, authorizeRoles("admin"), editEmployee);
 
 module.exports = router;
