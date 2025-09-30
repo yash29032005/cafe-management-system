@@ -60,9 +60,6 @@ const EmployeeManagement = () => {
                 <p className="text-xs opacity-80 text-lightgrey dark:text-darkgrey -mt-1">
                   {emp.role}
                 </p>
-                <p className="mt-1 text-sm font-semibold text-black dark:text-white">
-                  ₹{emp.salary}
-                </p>
               </div>
               <div className="me-3">
                 <span className="text-xs px-2 py-1 rounded-full bg-lightsecondary dark:bg-darkprimary text-black dark:text-white">
