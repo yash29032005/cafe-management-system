@@ -13,7 +13,7 @@ const PaymentModal = ({ onClose, cart, setCart }) => {
       const result = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/order/create`,
         {
-          user: user.id,
+          userId: user.id,
           customerName,
           cart,
           paymentMethod,

@@ -70,8 +70,8 @@ const OrderHistoryPage = () => {
                         >
                           <td className="py-2">{item.name}</td>
                           <td>{item.quantity}</td>
-                          <td>₹{item.price.toFixed(2)}</td>
-                          <td>₹{(item.price * item.quantity).toFixed(2)}</td>
+                          <td>₹{item.price}</td>
+                          <td>₹{item.price * item.quantity}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -79,7 +79,7 @@ const OrderHistoryPage = () => {
 
                   {/* Order Total */}
                   <div className="flex justify-end mt-1 pt-3 border-t border-darkgrey dark:border-lightgrey font-semibold text-gray-900 dark:text-white">
-                    Order Total: ₹{order.total.toFixed(2)}
+                    Order Total: ₹{order.total}
                   </div>
                 </div>
               );
