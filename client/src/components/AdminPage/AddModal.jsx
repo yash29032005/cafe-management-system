@@ -1,15 +1,31 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { toast } from "react-toastify";
+import { ProductContext } from "../../context/ProductContext";
 
 const AddModal = ({ onClose, product }) => {
+  const product_id = product.id;
   const product_quantity = product.stock;
   const [quantity, setQuantity] = useState(0);
+  const { setProducts } = useContext(ProductContext);
 
   const addStock = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/stock`, {
-        withCredentials: true,
-      });
+      const result = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/stock/add/${product_id}`,
+        { quantity },
+        {
+          withCredentials: true,
+        }
+      );
+      setQuantity(0);
+      onClose();
+      toast.success(result.data.message);
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === product.id ? { ...p, stock: p.stock + quantity } : p
+        )
+      );
     } catch (err) {
       console.error("Error fetching requests:", err);
     }
@@ -81,13 +97,13 @@ const AddModal = ({ onClose, product }) => {
             >
               Cancel
             </button>
-            <buttonget
+            <button
               onClick={addStock}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >
               Add
-            </buttonget>
+            </button>
           </div>
         </div>
       </div>
