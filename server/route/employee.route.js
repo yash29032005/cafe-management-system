@@ -4,6 +4,7 @@ const { protect } = require("../middleware/getAuth");
 const {
   getAllEmployees,
   editEmployee,
+  deleteEmployee,
 } = require("../controller/employee.controller");
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.get(
   getAllEmployees
 );
 router.put("/:id", protect, authorizeRoles("admin"), editEmployee);
+router.delete("/:id", protect, authorizeRoles("admin"), deleteEmployee);
 
 module.exports = router;

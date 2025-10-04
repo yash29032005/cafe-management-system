@@ -61,3 +61,22 @@ exports.editEmployee = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.deleteEmployee = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await pool.query("DELETE FROM employees WHERE id = ?", [
+      id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json({ message: "Employee removed successfully" });
+  } catch (error) {
+    console.error("Error in employee controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

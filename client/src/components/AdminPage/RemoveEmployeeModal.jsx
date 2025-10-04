@@ -1,6 +1,34 @@
+import axios from "axios";
 import React from "react";
+import { useContext } from "react";
+import { toast } from "react-toastify";
+import { UserContext } from "../../context/UserContext";
 
 const RemoveEmployeeModal = ({ onClose, emp }) => {
+  const { setEmployees } = useContext(UserContext);
+
+  const handleRemove = async () => {
+    try {
+      const result = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/employee/${emp.id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      toast.success(result.data.message);
+
+      // remove deleted employee from state
+      setEmployees((prevEmployees) =>
+        prevEmployees.filter((e) => e.id !== emp.id)
+      );
+
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
   return (
     <>
       <div
@@ -20,7 +48,10 @@ const RemoveEmployeeModal = ({ onClose, emp }) => {
                 Remove Employee
               </h2>
             </div>
-            <button className="text-gray-400 hover:text-white transition duration-200 text-lg">
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition duration-200 text-lg"
+            >
               ✕
             </button>
           </div>
@@ -41,6 +72,7 @@ const RemoveEmployeeModal = ({ onClose, emp }) => {
               Cancel
             </button>
             <button
+              onClick={handleRemove}
               className="px-5 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
                 dark:from-darkternary dark:to-darkprimary rounded-lg text-black dark:text-white"
             >
