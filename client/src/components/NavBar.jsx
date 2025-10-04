@@ -158,7 +158,9 @@ const NavBar = () => {
               <Link
                 onClick={() => setOpenProfileModal((prev) => !prev)}
                 className="px-4 py-2 rounded-md hover:opacity-90 transition text-black
-              dark:text-white bg-lightsecondary dark:bg-darksecondary"
+              dark:text-white bg-lightsecondary da
+              rk:bg-darksecondary"
+                style={{ height: "calc(100vh - 100px)" }}
               >
                 {user.name}
               </Link>
