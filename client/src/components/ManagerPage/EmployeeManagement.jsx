@@ -2,11 +2,11 @@ import { useContext, useEffect } from "react";
 import { IoPersonOutline } from "react-icons/io5";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
-import { useState } from "react";
+import { OrderContext } from "../../context/OrderContext";
 
 const EmployeeManagement = () => {
   const { employees } = useContext(UserContext);
-  const [ordersMap, setOrdersMap] = useState({});
+  const { ordersMap, setOrdersMap } = useContext(OrderContext);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -26,7 +26,7 @@ const EmployeeManagement = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [setOrdersMap]);
 
   return (
     <div

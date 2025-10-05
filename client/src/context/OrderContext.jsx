@@ -10,6 +10,7 @@ export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(UserContext);
+  const [ordersMap, setOrdersMap] = useState({});
 
   useEffect(() => {
     if (!user || user.role === "manager") {
@@ -38,7 +39,9 @@ export const OrderProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <OrderContext.Provider value={{ orders, setOrders, loading }}>
+    <OrderContext.Provider
+      value={{ orders, setOrders, ordersMap, setOrdersMap, loading }}
+    >
       {children}
     </OrderContext.Provider>
   );
