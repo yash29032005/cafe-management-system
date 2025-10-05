@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const ManagerDashboard = () => {
   const { products } = useContext(ProductContext);
   const { employees } = useContext(UserContext);
-  const { ordersMap } = useContext(OrderContext);
+  const { ordersMap, totalOrder } = useContext(OrderContext);
 
   return (
     <div className="px-4 py-2 bg-lightprimary dark:bg-darkprimary min-h-screen">
@@ -37,7 +37,7 @@ const ManagerDashboard = () => {
                           dark:from-darkternary dark:to-darkprimary 
                           rounded-2xl shadow-lg p-6 "
           >
-            <div className="text-4xl font-extrabold">256</div>
+            <div className="text-4xl font-extrabold">{totalOrder}</div>
             <div className="text-lightgrey dark:text-darkgrey text-sm">
               Orders
             </div>

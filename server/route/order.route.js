@@ -5,6 +5,7 @@ const {
   createOrder,
   getOrder,
   getOrdersCount,
+  getTotalOrders,
 } = require("../controller/order.controller");
 const router = express.Router();
 
@@ -15,6 +16,12 @@ router.get(
   protect,
   authorizeRoles("manager", "admin"),
   getOrdersCount
+);
+router.get(
+  "/total",
+  protect,
+  authorizeRoles("manager", "admin"),
+  getTotalOrders
 );
 
 module.exports = router;

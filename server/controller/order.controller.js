@@ -116,3 +116,16 @@ exports.getOrdersCount = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
+
+exports.getTotalOrders = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT COUNT(id) AS total 
+      FROM orders
+    `);
+    res.status(200).json({ total: rows[0].total });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};

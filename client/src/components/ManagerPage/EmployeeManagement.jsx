@@ -1,32 +1,11 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { IoPersonOutline } from "react-icons/io5";
 import { UserContext } from "../../context/UserContext";
-import axios from "axios";
 import { OrderContext } from "../../context/OrderContext";
 
 const EmployeeManagement = () => {
   const { employees } = useContext(UserContext);
-  const { ordersMap, setOrdersMap } = useContext(OrderContext);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/order/count`,
-          { withCredentials: true }
-        );
-        const map = {};
-        result.data.orders.forEach((o) => {
-          map[o.user_id] = o.total;
-        });
-        setOrdersMap(map);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchOrders();
-  }, [setOrdersMap]);
+  const { ordersMap } = useContext(OrderContext);
 
   return (
     <div
