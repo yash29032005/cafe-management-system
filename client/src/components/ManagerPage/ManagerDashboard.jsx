@@ -3,6 +3,7 @@ import { MdDashboard } from "react-icons/md";
 import { ProductContext } from "../../context/ProductContext";
 import { UserContext } from "../../context/UserContext";
 import { OrderContext } from "../../context/OrderContext";
+import { Link } from "react-router-dom";
 
 const ManagerDashboard = () => {
   const { products } = useContext(ProductContext);
@@ -14,10 +15,17 @@ const ManagerDashboard = () => {
       <div className="bg-lightsecondary dark:bg-darksecondary p-5 rounded-2xl shadow-xl h-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <p className="flex items-center gap-2 text-2xl text-black dark:text-white font-bold">
+          <div className="flex items-center gap-2 text-2xl text-black dark:text-white font-bold">
             <MdDashboard className="text-black dark:text-white" />
             Manager's Dashboard
-          </p>
+          </div>
+          <Link
+            to={"/manager"}
+            className="text-black dark:text-white px-4 py-2 bg-gradient-to-b from-lightternary to-lightprimary 
+                          dark:from-darkternary dark:to-darkprimary rounded-2xl"
+          >
+            Go Back
+          </Link>
         </div>
 
         {/* Dashboard Grid */}
