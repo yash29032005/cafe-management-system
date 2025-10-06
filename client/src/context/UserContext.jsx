@@ -9,7 +9,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [employees, setEmployees] = useState([]);
-
+  const [totalEmployees, setTotalEmployees] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -50,21 +50,11 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchAllEmployee = async () => {
       try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/auth/me`,
+        const empResult = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/employee/all`,
           { withCredentials: true }
         );
-
-        const fetchedUser = result.data.user;
-
-        // ✅ only fetch employees if manager/admin
-        if (fetchedUser?.role === "manager" || fetchedUser?.role === "admin") {
-          const empResult = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/employee/all`,
-            { withCredentials: true }
-          );
-          setEmployees(empResult.data.employees || []);
-        }
+        setEmployees(empResult.data.employees || []);
       } catch (err) {
         setEmployees(null);
         console.log(err);
@@ -76,9 +66,32 @@ export const UserProvider = ({ children }) => {
     fetchAllEmployee();
   }, []);
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const result = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/employee/summary`,
+          { withCredentials: true }
+        );
+        setTotalEmployees(result.data.total);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <UserContext.Provider
-      value={{ user, setUser, employees, setEmployees, loading }}
+      value={{
+        user,
+        setUser,
+        employees,
+        totalEmployees,
+        setEmployees,
+        loading,
+      }}
     >
       {loading ? (
         <div className="flex items-center justify-center h-screen bg-white dark:bg-black">

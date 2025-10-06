@@ -7,11 +7,11 @@ import { UserContext } from "./UserContext";
 export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { user } = useContext(UserContext);
+  const [orders, setOrders] = useState([]);
   const [ordersMap, setOrdersMap] = useState({});
   const [totalOrder, setTotalOrder] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user || user.role === "manager") {
@@ -40,10 +40,10 @@ export const OrderProvider = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersSummary = async () => {
       try {
         const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/order/count`,
+          `${import.meta.env.VITE_API_URL}/api/order/summary`,
           { withCredentials: true }
         );
         const map = {};
@@ -51,29 +51,14 @@ export const OrderProvider = ({ children }) => {
           map[o.user_id] = o.total;
         });
         setOrdersMap(map);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchOrders();
-  }, [setOrdersMap]);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/order/total`,
-          { withCredentials: true }
-        );
         setTotalOrder(result.data.total);
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchOrders();
-  }, []);
+    fetchOrdersSummary();
+  }, [setOrdersMap]);
 
   return (
     <OrderContext.Provider

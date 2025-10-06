@@ -80,3 +80,20 @@ exports.deleteEmployee = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getEmployeeSummary = async (req, res) => {
+  try {
+    const [totalEmployees] = await pool.query(`
+      SELECT COUNT(id) AS total 
+      FROM employees
+      WHERE role="employee"
+    `);
+
+    res.status(200).json({
+      total: totalEmployees[0].total,
+    });
+  } catch (error) {
+    console.error("Error in employee controller:", error);
+    res.status(500);
+  }
+};

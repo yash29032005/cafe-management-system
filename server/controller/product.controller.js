@@ -91,3 +91,19 @@ exports.insertProducts = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getProductSummary = async (req, res) => {
+  try {
+    const [totalProducts] = await pool.query(`
+      SELECT COUNT(id) AS total 
+      FROM products
+    `);
+
+    res.status(200).json({
+      total: totalProducts[0].total,
+    });
+  } catch (error) {
+    console.error("Error in employee controller:", error);
+    res.status(500);
+  }
+};

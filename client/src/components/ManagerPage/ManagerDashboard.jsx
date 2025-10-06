@@ -6,8 +6,8 @@ import { OrderContext } from "../../context/OrderContext";
 import { Link } from "react-router-dom";
 
 const ManagerDashboard = () => {
-  const { products } = useContext(ProductContext);
-  const { employees } = useContext(UserContext);
+  const { products, totalProducts } = useContext(ProductContext);
+  const { employees, totalEmployees } = useContext(UserContext);
   const { ordersMap, totalOrder } = useContext(OrderContext);
 
   return (
@@ -50,7 +50,7 @@ const ManagerDashboard = () => {
                           dark:from-darkternary dark:to-darkprimary 
                           rounded-2xl shadow-lg p-6"
           >
-            <div className="text-4xl font-extrabold">2</div>
+            <div className="text-4xl font-extrabold">{totalEmployees}</div>
             <div className="text-lightgrey dark:text-darkgrey text-sm">
               Employees
             </div>
@@ -63,7 +63,7 @@ const ManagerDashboard = () => {
                           dark:from-darkternary dark:to-darkprimary 
                           rounded-2xl shadow-lg p-6"
           >
-            <div className="text-4xl font-extrabold">1</div>
+            <div className="text-4xl font-extrabold">{totalProducts}</div>
             <div className="text-lightgrey dark:text-darkgrey text-sm">
               Products
             </div>

@@ -103,29 +103,27 @@ exports.getOrder = async (req, res) => {
   }
 };
 
-exports.getOrdersCount = async (req, res) => {
+exports.getOrdersSummary = async (req, res) => {
   try {
-    const [rows] = await pool.query(`
+    // Query 1: total orders grouped by user
+    const [ordersByUser] = await pool.query(`
       SELECT user_id, COUNT(id) AS total 
       FROM orders 
       GROUP BY user_id
     `);
-    res.status(200).json({ orders: rows });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to fetch orders" });
-  }
-};
 
-exports.getTotalOrders = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
+    // Query 2: total orders overall
+    const [totalOrders] = await pool.query(`
       SELECT COUNT(id) AS total 
       FROM orders
     `);
-    res.status(200).json({ total: rows[0].total });
+
+    res.status(200).json({
+      orders: ordersByUser,
+      total: totalOrders[0].total,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to fetch orders" });
+    res.status(500);
   }
 };

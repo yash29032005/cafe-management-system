@@ -4,6 +4,7 @@ const {
   editProducts,
   deleteProducts,
   insertProducts,
+  getProductSummary,
 } = require("../controller/product.controller");
 const { authorizeRoles } = require("../middleware/authorizedRoles");
 const { protect } = require("../middleware/getAuth");
@@ -26,5 +27,11 @@ router.delete(
 );
 
 router.post("/", protect, authorizeRoles("admin"), insertProducts);
+router.get(
+  "/summary",
+  protect,
+  authorizeRoles("admin", "manager"),
+  getProductSummary
+);
 
 module.exports = router;
