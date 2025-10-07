@@ -6,35 +6,13 @@ import EditEmployeeModal from "./EditEmployeeModal";
 import RemoveEmployeeModal from "./RemoveEmployeeModal";
 import { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
-import { useEffect } from "react";
-import axios from "axios";
+import { OrderContext } from "../../context/OrderContext";
 
 const EmployeeManagement = () => {
   const { employees } = useContext(UserContext);
   const [openEditEmployeeModal, setOpenEditEmployeeModal] = useState(false);
   const [openRemoveEmployee, setOpenRemoveEmployee] = useState(false);
-
-  const [ordersMap, setOrdersMap] = useState({});
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const result = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/order/count`,
-          { withCredentials: true }
-        );
-        const map = {};
-        result.data.orders.forEach((o) => {
-          map[o.user_id] = o.total;
-        });
-        setOrdersMap(map);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+  const { ordersMap } = useContext(OrderContext);
 
   return (
     <>

@@ -1,6 +1,8 @@
-import React, { createContext, useState, useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { UserContext } from "./UserContext";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const ProductContext = createContext();
@@ -8,7 +10,7 @@ export const ProductContext = createContext();
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -21,11 +23,16 @@ export const ProductProvider = ({ children }) => {
       } catch (error) {
         console.error(error);
         toast.error(error.response?.data?.message || "Something went wrong");
-      } finally {
-        setLoading(false);
       }
     };
-    fetchProducts();
+
+    if (
+      user?.role === "manager" ||
+      user?.role === "admin" ||
+      user?.role === "employee"
+    ) {
+      fetchProducts();
+    }
   }, []);
 
   useEffect(() => {
@@ -41,20 +48,14 @@ export const ProductProvider = ({ children }) => {
       }
     };
 
-    fetchProductSummary();
+    if (user?.role === "manager" || user?.role === "admin") {
+      fetchProductSummary();
+    }
   }, []);
 
   return (
-    <ProductContext.Provider
-      value={{ products, setProducts, totalProducts, loading }}
-    >
-      {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      ) : (
-        children
-      )}
+    <ProductContext.Provider value={{ products, setProducts, totalProducts }}>
+      {children}
     </ProductContext.Provider>
   );
 };

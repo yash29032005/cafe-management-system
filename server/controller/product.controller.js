@@ -10,7 +10,7 @@ exports.getProducts = async (req, res) => {
     res.status(200).json({ product: rows });
   } catch (error) {
     console.error("Error in product controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500);
   }
 };
 
@@ -45,7 +45,9 @@ exports.editProducts = async (req, res) => {
     res.status(200).json({ message: "Product updated successfully" });
   } catch (error) {
     console.error("Error in product controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error while editing product" });
   }
 };
 
@@ -63,7 +65,9 @@ exports.deleteProducts = async (req, res) => {
       .json({ product: rows, message: "Profuct removed successfully" });
   } catch (error) {
     console.error("Error in product controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error while deleting product" });
   }
 };
 
@@ -88,7 +92,9 @@ exports.insertProducts = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in product controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error while inserting product" });
   }
 };
 

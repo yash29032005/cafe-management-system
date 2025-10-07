@@ -99,7 +99,7 @@ const CheckRequestModal = ({ onClose }) => {
                   {req.product_name} ({req.quantity} quantity)
                 </p>
                 <p className="text-xs opacity-80 text-lightgrey dark:text-darkgrey -mt-1">
-                  Requested by: {req.employee_name}
+                  Requested by: {req.employee_name || "Deleted"}
                 </p>
               </div>
 

@@ -2,7 +2,6 @@ import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const UserContext = createContext();
 
@@ -65,11 +64,13 @@ export const UserProvider = ({ children }) => {
       }
     };
 
-    fetchAllEmployee();
-  }, []);
+    if (user?.role === "manager" || user?.role === "admin") {
+      fetchAllEmployee();
+    }
+  }, [user?.role]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchEmployeeSummary = async () => {
       try {
         const result = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/employee/summary`,
@@ -83,8 +84,10 @@ export const UserProvider = ({ children }) => {
       }
     };
 
-    fetchOrders();
-  }, []);
+    if (user?.role === "manager" || user?.role === "admin") {
+      fetchEmployeeSummary();
+    }
+  }, [user?.role]);
 
   return (
     <UserContext.Provider

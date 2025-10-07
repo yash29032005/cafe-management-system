@@ -22,7 +22,7 @@ exports.getAllEmployees = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500);
   }
 };
 
@@ -58,7 +58,9 @@ exports.editEmployee = async (req, res) => {
     res.status(200).json({ message: "Employee updated successfully" });
   } catch (error) {
     console.error("Error in employee controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error while editing employee" });
   }
 };
 
@@ -77,7 +79,9 @@ exports.deleteEmployee = async (req, res) => {
     res.json({ message: "Employee removed successfully" });
   } catch (error) {
     console.error("Error in employee controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error while deleting employee" });
   }
 };
 

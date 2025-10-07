@@ -2,24 +2,38 @@ const pool = require("../config/db");
 
 // POST /api/stock/request
 exports.createRequest = async (req, res) => {
-  const { productId, employeeId, quantity } = req.body;
-  await pool.query(
-    "INSERT INTO stock_requests (product_id, employee_id, quantity) VALUES (?, ?, ?)",
-    [productId, employeeId, quantity]
-  );
-  res.json({ message: "Request sent successfully!" });
+  try {
+    const { productId, employeeId, quantity } = req.body;
+    await pool.query(
+      "INSERT INTO stock_requests (product_id, employee_id, quantity) VALUES (?, ?, ?)",
+      [productId, employeeId, quantity]
+    );
+    res.json({ message: "Request sent successfully!" });
+  } catch (err) {
+    console.error("Error in stock controller:", err);
+    res
+      .status(500)
+      .json({ message: "Internal server error while creating request" });
+  }
 };
 
 // GET /api/stock/request
 exports.getAllRequests = async (req, res) => {
-  const [rows] = await pool.query(
-    `SELECT sr.id, sr.quantity, sr.status, p.name AS product_name, e.name AS employee_name
-     FROM stock_requests sr
-     JOIN products p ON sr.product_id = p.id
-     JOIN employees e ON sr.employee_id = e.id
-     ORDER BY sr.created_at DESC`
-  );
-  res.json({ rows });
+  try {
+    const [rows] = await pool.query(
+      `SELECT sr.id, sr.quantity, sr.status, 
+              p.name AS product_name, 
+              e.name AS employee_name
+       FROM stock_requests sr
+       LEFT JOIN products p ON sr.product_id = p.id
+       LEFT JOIN employees e ON sr.employee_id = e.id
+       ORDER BY sr.created_at DESC`
+    );
+    res.json({ rows });
+  } catch (err) {
+    console.error("Error in stock controller:", err);
+    res.status(500);
+  }
 };
 
 // PUT /api/stock/approve/:id
@@ -61,7 +75,7 @@ exports.approveRequest = async (req, res) => {
       message: "Request approved and stock updated",
     });
   } catch (err) {
-    console.error("Error approving request:", err);
+    console.error("Error in stock controller:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -78,18 +92,27 @@ exports.rejectRequest = async (req, res) => {
 
     res.json({ status: "rejected", message: "Request rejected" });
   } catch (err) {
-    console.error("Error rejecting request:", err);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error in stock controller:", err);
+    res
+      .status(500)
+      .json({ message: "Internal server error while rejecting request" });
   }
 };
 
 // PUT /api/stock/add/:id
 exports.addStock = async (req, res) => {
-  const { id } = req.params;
-  const { quantity } = req.body;
-  await pool.query("UPDATE products SET stock = stock + ? WHERE id = ?", [
-    quantity,
-    id,
-  ]);
-  res.json({ message: "Stock added successfully" });
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body;
+    await pool.query("UPDATE products SET stock = stock + ? WHERE id = ?", [
+      quantity,
+      id,
+    ]);
+    res.json({ message: "Stock added successfully" });
+  } catch (err) {
+    console.error("Error in stock controller:", err);
+    res
+      .status(500)
+      .json({ message: "Internal server error while adding stock" });
+  }
 };

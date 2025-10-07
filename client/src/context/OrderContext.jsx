@@ -13,7 +13,6 @@ export const OrderProvider = ({ children }) => {
   const [ordersMap, setOrdersMap] = useState({});
   const [totalOrder, setTotalOrder] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -28,12 +27,12 @@ export const OrderProvider = ({ children }) => {
       } catch (error) {
         console.error(error);
         toast.error(error.response?.data?.message || "Something went wrong");
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchOrders();
+    if (user?.role === "employee") {
+      fetchOrders();
+    }
   }, [user]);
 
   useEffect(() => {
@@ -49,8 +48,6 @@ export const OrderProvider = ({ children }) => {
       } catch (error) {
         console.error(error);
         toast.error(error.response?.data?.message || "Something went wrong");
-      } finally {
-        setLoading(false);
       }
     };
     if (user?.role === "admin") {
@@ -77,8 +74,10 @@ export const OrderProvider = ({ children }) => {
       }
     };
 
-    fetchOrdersSummary();
-  }, [setOrdersMap]);
+    if (user?.role === "manager" || user?.role === "admin") {
+      fetchOrdersSummary();
+    }
+  }, [setOrdersMap, user?.role]);
 
   return (
     <OrderContext.Provider
@@ -90,7 +89,6 @@ export const OrderProvider = ({ children }) => {
         setOrdersMap,
         totalOrder,
         totalRevenue,
-        loading,
       }}
     >
       {children}

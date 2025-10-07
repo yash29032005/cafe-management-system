@@ -43,7 +43,9 @@ exports.createOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in orders controller:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error while creating order" });
   }
 };
 
@@ -99,7 +101,7 @@ exports.getOrder = async (req, res) => {
     res.status(200).json({ orders });
   } catch (error) {
     console.error("Error in orders controller:", error);
-    res.status(500).json({ message: "Failed to fetch orders" });
+    res.status(500);
   }
 };
 
@@ -154,7 +156,7 @@ exports.getAllOrders = async (req, res) => {
     res.status(200).json({ orders });
   } catch (error) {
     console.error("Error fetching all orders:", error);
-    res.status(500).json({ message: "Failed to fetch all orders" });
+    res.status(500);
   }
 };
 
