@@ -15,6 +15,7 @@
 
 html {
   scroll-behavior: smooth;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* Default (light theme) */
@@ -36,15 +37,15 @@ html {
 }
 
 /* Dark theme */
-.dark ::-webkit-scrollbar-track {
+.dark :where(::-webkit-scrollbar-track) {
   background: var(--color-darkprimary);
 }
 
-.dark ::-webkit-scrollbar-thumb {
+.dark :where(::-webkit-scrollbar-thumb) {
   background: var(--color-darksecondary);
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
+.dark :where(::-webkit-scrollbar-thumb:hover) {
   background: var(--color-darkternary);
 }
 

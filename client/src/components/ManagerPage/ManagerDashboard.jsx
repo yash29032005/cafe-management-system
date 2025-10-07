@@ -4,11 +4,31 @@ import { ProductContext } from "../../context/ProductContext";
 import { UserContext } from "../../context/UserContext";
 import { OrderContext } from "../../context/OrderContext";
 import { Link } from "react-router-dom";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
 const ManagerDashboard = () => {
   const { products, totalProducts } = useContext(ProductContext);
   const { employees, totalEmployees } = useContext(UserContext);
   const { ordersMap, totalOrder } = useContext(OrderContext);
+
+  const employeeOrdersData = employees.map((emp) => ({
+    name: emp.name,
+    value: ordersMap[emp.id] ?? 0,
+  }));
+
+  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff6f61", "#00c49f"];
 
   return (
     <div className="px-4 py-2 bg-lightprimary dark:bg-darkprimary min-h-screen">
@@ -69,7 +89,7 @@ const ManagerDashboard = () => {
             </div>
           </div>
 
-          {/* Products Card */}
+          {/* Product Stock Chart */}
           <div
             className="flex flex-col font-bold 
                           bg-gradient-to-b from-lightternary to-lightprimary 
@@ -77,40 +97,44 @@ const ManagerDashboard = () => {
                           col-span-2 row-span-3 rounded-2xl p-5 shadow-lg"
           >
             <div className="text-xl font-extrabold mb-4 border-b border-lightgrey dark:border-darkgrey pb-2">
-              Products
+              Product Stock Levels
             </div>
-            <div className="flex flex-col gap-3 overflow-y-auto overflow-x-hidden">
-              {products
-                .slice()
-                .sort((a, b) => a.stock - b.stock)
-                .map((pro) => (
-                  <div
-                    key={pro.id}
-                    className="text-black dark:text-white 
-                               px-5 py-4 rounded-lg shadow-md flex flex-row items-center justify-between
-                               hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
-                  >
-                    <div className="flex-1">
-                      <p className="font-semibold text-md">{pro.name}</p>
-                      <p className="text-xs opacity-70 -mt-1">₹{pro.price}</p>
-                    </div>
-                    <div className="me-2">
-                      <span
-                        className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                          pro.stock <= 5
-                            ? "bg-red-600 text-white"
-                            : "bg-lightsecondary dark:bg-darkprimary text-black dark:text-white"
-                        }`}
-                      >
-                        Stock: {pro.stock}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+            <div className="w-full h-full">
+              <ResponsiveContainer>
+                <BarChart
+                  data={products} // extra space for labels
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{
+                      fontSize: 12,
+                      fill: "#fff",
+                    }}
+                  />
+                  <YAxis tick={{ fontSize: 12, fill: "#fff" }} />
+                  <Tooltip
+                    labelStyle={{ color: "#000" }}
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      borderRadius: "6px",
+                    }}
+                  />
+                  <Bar dataKey="stock">
+                    {products.map((pro) => (
+                      <Cell
+                        key={pro.id}
+                        fill={pro.stock <= 5 ? "#ef4444" : "#22c55e"}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
           {/* Employees Orders Card */}
+          {/* Employee Orders Pie Chart */}
           <div
             className="flex flex-col font-bold 
                           bg-gradient-to-b from-lightternary to-lightprimary 
@@ -118,31 +142,30 @@ const ManagerDashboard = () => {
                           col-span-3 row-span-2 rounded-2xl p-5 shadow-lg"
           >
             <div className="text-xl font-extrabold mb-4 border-b border-lightgrey dark:border-darkgrey pb-2">
-              Employees
+              Orders by Employees
             </div>
-            <div className="flex flex-col gap-3 overflow-y-hidden overflow-x-hidden">
-              {employees.map((emp) => (
-                <div
-                  key={emp.id}
-                  className="text-black dark:text-white 
-                               px-5 py-4 rounded-lg shadow-md flex flex-row items-center justify-between
-                               hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={employeeOrdersData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  label
                 >
-                  <div className="flex-1">
-                    <p className="font-semibold text-md">{emp.name}</p>
-                    <p className="text-xs opacity-70 -mt-1">{emp.role}</p>
-                  </div>
-                  <div className="me-2">
-                    <span
-                      className="text-xs px-3 py-1 rounded-full font-semibold
-                                     bg-lightsecondary dark:bg-darkprimary text-black dark:text-white"
-                    >
-                      {ordersMap[emp.id] ?? 0} orders
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  {employeeOrdersData.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
