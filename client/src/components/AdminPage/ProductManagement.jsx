@@ -75,7 +75,7 @@ const ProductManagement = () => {
                     {item.category}
                   </p>
                   <p className="mt-1 font-semibold text-black dark:text-white">
-                    ${item.price}
+                    ₹{item.price}
                   </p>
                   <span
                     className="absolute bottom-0 right-0 text-xs bg-lightprimary dark:bg-darkprimary 

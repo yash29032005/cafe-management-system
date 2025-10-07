@@ -88,9 +88,21 @@ exports.getEmployeeSummary = async (req, res) => {
       FROM employees
       WHERE role="employee"
     `);
+    const [totalManagers] = await pool.query(`
+      SELECT COUNT(id) AS total 
+      FROM employees
+      WHERE role="manager"
+    `);
+    const [totalAdmin] = await pool.query(`
+      SELECT COUNT(id) AS total 
+      FROM employees
+      WHERE role="admin"
+    `);
 
     res.status(200).json({
-      total: totalEmployees[0].total,
+      totalEmployees: totalEmployees[0].total,
+      totalManagers: totalManagers[0].total,
+      totalAdmin: totalAdmin[0].total,
     });
   } catch (error) {
     console.error("Error in employee controller:", error);

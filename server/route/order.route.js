@@ -5,11 +5,13 @@ const {
   createOrder,
   getOrder,
   getOrdersSummary,
+  getAllOrders,
 } = require("../controller/order.controller");
 const router = express.Router();
 
 router.post("/create", protect, authorizeRoles("employee"), createOrder);
 router.get("/", protect, authorizeRoles("employee", "admin"), getOrder);
+router.get("/all", protect, authorizeRoles("admin"), getAllOrders);
 router.get(
   "/summary",
   protect,

@@ -133,7 +133,6 @@ const ManagerDashboard = () => {
             </div>
           </div>
 
-          {/* Employees Orders Card */}
           {/* Employee Orders Pie Chart */}
           <div
             className="flex flex-col font-bold 

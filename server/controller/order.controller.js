@@ -103,6 +103,61 @@ exports.getOrder = async (req, res) => {
   }
 };
 
+exports.getAllOrders = async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT 
+          o.id AS orderId,
+          o.user_id,
+          u.name AS userName,
+          o.customer_name,
+          o.total,
+          o.created_at,
+          oi.product_id,
+          p.name AS productName,
+          oi.quantity,
+          oi.price
+       FROM orders o
+       JOIN order_items oi ON o.id = oi.order_id
+       JOIN products p ON oi.product_id = p.id
+       LEFT JOIN employees u ON o.user_id = u.id
+       ORDER BY o.created_at DESC, oi.id ASC`
+    );
+
+    // group orders with their items
+    const ordersMap = {};
+    rows.forEach((row) => {
+      if (!ordersMap[row.orderId]) {
+        ordersMap[row.orderId] = {
+          orderId: row.orderId,
+          userId: row.user_id,
+          userName: row.userName,
+          customerName: row.customer_name,
+          total: row.total,
+          createdAt: row.created_at,
+          items: [],
+        };
+      }
+      ordersMap[row.orderId].items.push({
+        productId: row.product_id,
+        name: row.productName,
+        quantity: row.quantity,
+        price: row.price,
+      });
+    });
+
+    // sort by most recent first
+    const orders = Object.values(ordersMap).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Error fetching all orders:", error);
+    res.status(500).json({ message: "Failed to fetch all orders" });
+  }
+};
+
 exports.getOrdersSummary = async (req, res) => {
   try {
     // Query 1: total orders grouped by user
@@ -118,9 +173,15 @@ exports.getOrdersSummary = async (req, res) => {
       FROM orders
     `);
 
+    const [totalRevenue] = await pool.query(`
+      SELECT SUM(total) AS total 
+      FROM orders
+    `);
+
     res.status(200).json({
       orders: ordersByUser,
       total: totalOrders[0].total,
+      totalRevenue: totalRevenue[0].total,
     });
   } catch (error) {
     console.error(error);

@@ -10,6 +10,8 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
+  const [totalManagers, setTotalManagers] = useState(0);
+  const [totalAdmin, setTotalAdmin] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -73,7 +75,9 @@ export const UserProvider = ({ children }) => {
           `${import.meta.env.VITE_API_URL}/api/employee/summary`,
           { withCredentials: true }
         );
-        setTotalEmployees(result.data.total);
+        setTotalEmployees(result.data.totalEmployees);
+        setTotalManagers(result.data.totalManagers);
+        setTotalAdmin(result.data.totalAdmin);
       } catch (err) {
         console.log(err);
       }
@@ -89,6 +93,8 @@ export const UserProvider = ({ children }) => {
         setUser,
         employees,
         totalEmployees,
+        totalManagers,
+        totalAdmin,
         setEmployees,
         loading,
       }}
