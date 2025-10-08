@@ -85,15 +85,20 @@ const EditEmployeeModal = ({ onClose, emp }) => {
             <label htmlFor="role" className="text-sm ms-1 font-bold">
               Role
             </label>
-            <input
+            <select
               id="role"
-              type="text"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              placeholder="Enter file name"
               required
               className="w-full p-2 rounded-lg bg-lightsecondary dark:bg-darksecondary text-black dark:text-white text-sm"
-            />
+            >
+              <option value="" disabled>
+                Select a role
+              </option>
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
           <div className="mt-5 text-lightgrey dark:text-darkgrey flex flex-col">
             <label htmlFor="salary" className="text-sm ms-1 font-bold">
