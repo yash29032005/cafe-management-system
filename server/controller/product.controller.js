@@ -113,3 +113,22 @@ exports.getProductSummary = async (req, res) => {
     res.status(500);
   }
 };
+
+exports.togicLogic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { enabled } = req.body;
+
+    await pool.query("UPDATE products SET enabled = ? WHERE id = ?", [
+      enabled,
+      id,
+    ]);
+
+    res.status(200).json({ enabled });
+  } catch (error) {
+    console.error("Error in product controller:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error while toggling product" });
+  }
+};

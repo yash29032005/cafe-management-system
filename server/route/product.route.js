@@ -5,6 +5,7 @@ const {
   deleteProducts,
   insertProducts,
   getProductSummary,
+  togicLogic,
 } = require("../controller/product.controller");
 const { authorizeRoles } = require("../middleware/authorizedRoles");
 const { protect } = require("../middleware/getAuth");
@@ -33,5 +34,6 @@ router.get(
   authorizeRoles("admin", "manager"),
   getProductSummary
 );
+router.put("/:id/toggle", protect, authorizeRoles("admin"), togicLogic);
 
 module.exports = router;

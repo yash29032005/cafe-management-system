@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { CiShoppingCart } from "react-icons/ci";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
@@ -12,6 +12,15 @@ const PointOfSale = () => {
   const [cart, setCart] = useState([]);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
 
+  // Sync cart if product gets disabled
+  useEffect(() => {
+    setCart((prevCart) =>
+      prevCart.filter((item) =>
+        products.find((p) => p.id === item.id && p.enabled)
+      )
+    );
+  }, [products]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -22,6 +31,11 @@ const PointOfSale = () => {
 
   // Add product to cart
   const addToCart = (product) => {
+    if (!product.enabled) {
+      toast.warn("This product is disabled");
+      return;
+    }
+
     if (product.stock <= 0) {
       toast.warn("This item is out of stock");
       return;
@@ -36,7 +50,13 @@ const PointOfSale = () => {
       } else {
         return [
           ...prevCart,
-          { id: product.id, name: product.name, price: product.price, qty: 1 },
+          {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            qty: 1,
+            enabled: product.enabled,
+          },
         ];
       }
     });
@@ -51,41 +71,37 @@ const PointOfSale = () => {
 
   // Increase quantity
   const increaseQty = (id) => {
+    const product = products.find((p) => p.id === id);
+    if (!product || !product.enabled || product.stock <= 0) return;
+
     setCart((prevCart) =>
-      prevCart.map((item) => {
-        const product = products.find((p) => p.id === id);
-        if (item.id === id && product && product.stock > 0) {
-          // Deduct from stock
-          setProducts((prevProducts) =>
-            prevProducts.map((p) =>
-              p.id === id ? { ...p, stock: p.stock - 1 } : p
-            )
-          );
-          return { ...item, qty: item.qty + 1 };
-        }
-        return item;
-      })
+      prevCart.map((item) =>
+        item.id === id ? { ...item, qty: item.qty + 1 } : item
+      )
+    );
+
+    setProducts((prevProducts) =>
+      prevProducts.map((p) => (p.id === id ? { ...p, stock: p.stock - 1 } : p))
     );
   };
 
   // Decrease quantity
   const decreaseQty = (id) => {
-    setCart(
-      (prevCart) =>
-        prevCart
-          .map((item) => {
-            if (item.id === id && item.qty > 0) {
-              // Add back stock
-              setProducts((prevProducts) =>
-                prevProducts.map((p) =>
-                  p.id === id ? { ...p, stock: p.stock + 1 } : p
-                )
-              );
-              return { ...item, qty: item.qty - 1 };
-            }
-            return item;
-          })
-          .filter((item) => item.qty > 0) // remove if qty=0
+    setCart((prevCart) =>
+      prevCart
+        .map((item) => {
+          if (item.id === id && item.qty > 0) {
+            // Add back stock
+            setProducts((prevProducts) =>
+              prevProducts.map((p) =>
+                p.id === id ? { ...p, stock: p.stock + 1 } : p
+              )
+            );
+            return { ...item, qty: item.qty - 1 };
+          }
+          return item;
+        })
+        .filter((item) => item.qty > 0)
     );
   };
 
@@ -111,53 +127,51 @@ const PointOfSale = () => {
           {products.length === 0 ? (
             <p className="text-black dark:text-white">No products available</p>
           ) : (
-            products.map((item) => (
-              <motion.div
-                key={item.id}
-                whileHover={{ scale: item.stock > 0 ? 1.05 : 1 }}
-                whileTap={{ scale: item.stock > 0 ? 0.95 : 1 }}
-                className={`bg-gradient-to-b from-lightternary to-lightprimary 
-                  dark:from-darkternary dark:to-darkprimary text-white p-5 
-                  rounded-lg shadow-md flex flex-col justify-between
-                  min-h-[200px] md:min-h-[300px] transition cursor-pointer
-                  ${
-                    item.stock <= 0
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:shadow-lg"
-                  }`}
-                onClick={() => item.stock > 0 && addToCart(item)}
-              >
-                <div className="flex-1 flex flex-col items-center justify-center">
-                  <BsCup className="text-4xl text-black dark:text-white" />
-                </div>
-                <div className="mt-3 relative">
-                  <p className="font-bold text-lg text-black dark:text-white">
-                    {item.name}
-                  </p>
-                  <p className="text-sm opacity-80 text-lightgrey dark:text-darkgrey">
-                    {item.category}
-                  </p>
-                  <p className="mt-1 font-semibold text-black dark:text-white">
-                    ₹{Number(item.price).toFixed(2)}
-                  </p>
-                  <span
-                    className="absolute bottom-0 right-0 text-xs bg-lightprimary dark:bg-darkprimary 
-                      text-black dark:text-white rounded-full px-3 py-1"
-                  >
-                    {item.stock > 0 ? `Stock: ${item.stock}` : "Out of Stock"}
-                  </span>
-                </div>
-              </motion.div>
-            ))
+            products
+              .filter((item) => item.enabled) // ✅ only enabled products
+              .map((item) => (
+                <motion.div
+                  key={item.id}
+                  whileHover={{
+                    scale: item.stock > 0 ? 1.05 : 1,
+                  }}
+                  whileTap={{ scale: item.stock > 0 ? 0.95 : 1 }}
+                  className={`bg-gradient-to-b from-lightternary to-lightprimary 
+            dark:from-darkternary dark:to-darkprimary text-white p-5 
+            rounded-lg shadow-md flex flex-col justify-between
+            min-h-[200px] md:min-h-[300px] transition cursor-pointer
+            ${
+              item.stock <= 0
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:shadow-lg"
+            }`}
+                  onClick={() => item.stock > 0 && addToCart(item)}
+                >
+                  <div className="flex-1 flex flex-col items-center justify-center">
+                    <BsCup className="text-4xl text-black dark:text-white" />
+                  </div>
+                  <div className="mt-3 relative">
+                    <p className="font-bold text-lg text-black dark:text-white">
+                      {item.name}
+                    </p>
+                    <p className="text-sm opacity-80 text-lightgrey dark:text-darkgrey">
+                      {item.category}
+                    </p>
+                    <p className="mt-1 font-semibold text-black dark:text-white">
+                      ₹{Number(item.price).toFixed(2)}
+                    </p>
+                    <span className="absolute bottom-0 right-0 text-xs bg-lightprimary dark:bg-darkprimary text-black dark:text-white rounded-full px-3 py-1">
+                      {item.stock > 0 ? `Stock: ${item.stock}` : "Out of Stock"}
+                    </span>
+                  </div>
+                </motion.div>
+              ))
           )}
         </div>
       </div>
 
       {/* Right Side - Current Order */}
-      <div
-        className="bg-lightsecondary dark:bg-darksecondary w-full md:w-4/12 rounded-lg p-5 h-6/12 
-      md:h-full flex flex-col"
-      >
+      <div className="bg-lightsecondary dark:bg-darksecondary w-full md:w-4/12 rounded-lg p-5 h-6/12 md:h-full flex flex-col">
         <p className="text-xl font-semibold text-black dark:text-white">
           Current Order
         </p>
@@ -168,50 +182,57 @@ const PointOfSale = () => {
           </p>
         ) : (
           <div className="flex-1 flex flex-col justify-between mt-3">
-            {/* Cart Items Scrollable */}
             <div className="space-y-3 overflow-y-auto max-h-64 pr-1">
-              {cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between items-center bg-lightprimary dark:bg-darkprimary 
-                   rounded-lg p-3 shadow-sm"
-                >
-                  {/* Product Info */}
-                  <div>
-                    <p className="font-medium text-black dark:text-white">
-                      {item.name}
-                    </p>
-                    <p className="text-sm text-lightgrey dark:text-darkgrey">
-                      ₹{Number(item.price).toFixed(2)}
-                    </p>
+              {cart.map((item) => {
+                const product = products.find((p) => p.id === item.id);
+                const isEnabled = product ? product.enabled : true;
+                return (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center bg-lightprimary dark:bg-darkprimary 
+                    rounded-lg p-3 shadow-sm"
+                  >
+                    {isEnabled ? (
+                      <>
+                        <div>
+                          <p className="font-medium text-black dark:text-white">
+                            {item.name}
+                          </p>
+                          <p className="text-sm text-lightgrey dark:text-darkgrey">
+                            ₹{Number(item.price).toFixed(2)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => decreaseQty(item.id)}
+                            className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md transition"
+                          >
+                            -
+                          </button>
+                          <span className="text-black dark:text-white min-w-[20px] text-center">
+                            {item.qty}
+                          </span>
+                          <button
+                            onClick={() => increaseQty(item.id)}
+                            className={`px-2 py-1 rounded-md transition ${
+                              item.qty < product.stock
+                                ? "bg-green-600 hover:bg-green-700 text-white"
+                                : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                            }`}
+                            disabled={item.qty >= product.stock}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-red-500 font-semibold">
+                        This product is disabled
+                      </p>
+                    )}
                   </div>
-
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => decreaseQty(item.id)}
-                      className="px-2 py-1 bg-red-600 hover:bg-red-700 
-                       text-white rounded-md transition"
-                    >
-                      -
-                    </button>
-                    <span className="text-black dark:text-white min-w-[20px] text-center">
-                      {item.qty}
-                    </span>
-                    <button
-                      onClick={() => increaseQty(item.id)}
-                      className={`px-2 py-1 rounded-md transition ${
-                        item.qty < item.stock
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-gray-400 text-gray-200 cursor-not-allowed"
-                      }`}
-                      disabled={item.qty >= item.stock}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Total & Checkout */}
@@ -237,9 +258,7 @@ const PointOfSale = () => {
                 <PaymentModal
                   cart={cart}
                   setCart={setCart}
-                  onClose={() => {
-                    setOpenPaymentModal(false);
-                  }}
+                  onClose={() => setOpenPaymentModal(false)}
                 />
               )}
             </div>

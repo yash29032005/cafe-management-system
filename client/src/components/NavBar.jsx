@@ -58,31 +58,57 @@ const NavBar = () => {
       {/* Left Section */}
       <div className="flex items-center">
         <CiCoffeeCup className="text-2xl md:text-4xl -me-1 md:-me-2 dark:text-white" />
-        <Link
-          to={"/loginpage"}
-          className="text-lg md:text-3xl font-bold dark:text-white"
-        >
-          BrewDesk
-        </Link>
-        {location.pathname === "/manager" ||
-        location.pathname === "/manager/dashboard" ? (
-          <Link
-            to={"/manager/dashboard"}
-            className="ms-3 px-4 py-2 rounded-4xl text-sm bg-lightsecondary
-           dark:bg-darksecondary text-black dark:text-white"
-          >
-            Manager Dashboard
-          </Link>
+        {location.pathname === "/employee" ? (
+          <>
+            <Link
+              to={"/employee"}
+              className="text-lg md:text-3xl font-bold dark:text-white"
+            >
+              BrewDesk
+            </Link>
+          </>
+        ) : location.pathname === "/manager" ||
+          location.pathname === "/manager/dashboard" ? (
+          <>
+            <Link
+              to={"/manager"}
+              className="text-lg md:text-3xl font-bold dark:text-white"
+            >
+              BrewDesk
+            </Link>
+            <Link
+              to={"/manager/dashboard"}
+              className="ms-3 px-4 py-2 rounded-4xl text-sm bg-lightsecondary
+            dark:bg-darksecondary text-black dark:text-white"
+            >
+              Manager Dashboard
+            </Link>
+          </>
         ) : location.pathname === "/admin" ||
           location.pathname === "/admin/dashboard" ? (
+          <>
+            <Link
+              to={"/admin"}
+              className="text-lg md:text-3xl font-bold dark:text-white"
+            >
+              BrewDesk
+            </Link>
+            <Link
+              to={"/admin/dashboard"}
+              className="ms-3 px-4 py-2 rounded-4xl text-sm bg-lightsecondary
+            dark:bg-darksecondary text-black dark:text-white"
+            >
+              Admin Dashboard
+            </Link>
+          </>
+        ) : (
           <Link
-            to={"/admin/dashboard"}
-            className="ms-3 px-4 py-2 rounded-4xl text-sm bg-lightsecondary
-           dark:bg-darksecondary text-black dark:text-white"
+            to={"/loginpage"}
+            className="text-lg md:text-3xl font-bold dark:text-white"
           >
-            Admin Dashboard
+            BrewDesk
           </Link>
-        ) : null}
+        )}
       </div>
 
       {/* Desktop Right Section */}
