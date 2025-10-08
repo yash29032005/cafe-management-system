@@ -6,6 +6,7 @@ const {
   getOrder,
   getOrdersSummary,
   getAllOrders,
+  makePayment,
 } = require("../controller/order.controller");
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.get(
   authorizeRoles("manager", "admin"),
   getOrdersSummary
 );
+router.post("/payment", protect, authorizeRoles("employee"), makePayment);
 
 module.exports = router;

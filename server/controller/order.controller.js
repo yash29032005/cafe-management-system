@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const Razorpay = require("razorpay");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -188,5 +189,25 @@ exports.getOrdersSummary = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500);
+  }
+};
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+exports.makePayment = async (req, res) => {
+  try {
+    const options = {
+      amount: req.body.amount * 100, // amount in paise
+      currency: "INR",
+      receipt: `order_rcptid_${Date.now()}`,
+    };
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Payment initiation failed" });
   }
 };
