@@ -1,4 +1,4 @@
-# 📊 <PROJECT NAME>
+# 📊 BrewDesk
 
 A simple and efficient project built using **Node.js**, **Express**, and **MySQL** for managing and storing data securely.  
 This project demonstrates basic CRUD operations, authentication, and database connectivity.
@@ -57,4 +57,4 @@ You will find an `.env.example` file in the root folder.
 
 # 🧑‍💻 Author
 
-Name: <Yash Panchal>
+Name: Yash Panchal
