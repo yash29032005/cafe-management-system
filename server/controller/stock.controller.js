@@ -64,7 +64,7 @@ exports.approveRequest = async (req, res) => {
 
     // Update product stock
     await pool.query("UPDATE products SET stock = stock + ? WHERE id = ?", [
-      request.quantity,
+      Number(request.quantity),
       request.product_id,
     ]);
 

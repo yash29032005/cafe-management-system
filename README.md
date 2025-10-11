@@ -51,9 +51,13 @@ You will find an `.env.example` file in the root folder.
    ```
 5. **Run the server**
    ```bash
-   npm start
+   npm run dev
    ```
-6. **Project Demo**
+6. **Run the client**
+   ```bash
+   npm run dev
+   ```
+7. **Project Demo**
    You can watch a short demo video here:
 
 # 🧑‍💻 Author

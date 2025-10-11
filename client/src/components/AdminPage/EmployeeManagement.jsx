@@ -9,7 +9,7 @@ import { UserContext } from "../../context/UserContext";
 import { OrderContext } from "../../context/OrderContext";
 
 const EmployeeManagement = () => {
-  const { employees } = useContext(UserContext);
+  const { employeesandmanagers } = useContext(UserContext);
   const [openEditEmployeeModal, setOpenEditEmployeeModal] = useState(false);
   const [openRemoveEmployee, setOpenRemoveEmployee] = useState(false);
   const { ordersMap } = useContext(OrderContext);
@@ -31,7 +31,7 @@ const EmployeeManagement = () => {
             </p>
           </div>
           <div className="flex flex-col gap-3">
-            {employees.map((emp) => (
+            {employeesandmanagers.map((emp) => (
               <div
                 key={emp.id}
                 className="bg-gradient-to-b from-lightternary to-lightprimary 

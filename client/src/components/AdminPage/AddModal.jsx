@@ -23,7 +23,7 @@ const AddModal = ({ onClose, product }) => {
       toast.success(result.data.message);
       setProducts((prevProducts) =>
         prevProducts.map((p) =>
-          p.id === product.id ? { ...p, stock: p.stock + quantity } : p
+          p.id === product.id ? { ...p, stock: p.stock + Number(quantity) } : p
         )
       );
     } catch (err) {

@@ -254,9 +254,9 @@ const AdminDashboard = () => {
           {/* Employee Orders Pie Chart */}
           <div
             className="flex flex-col font-bold 
-                                    bg-gradient-to-b from-lightternary to-lightprimary 
-                                    dark:from-darkternary dark:to-darkprimary 
-                                    col-span-2 row-span-2 rounded-2xl p-5 shadow-lg"
+                  bg-gradient-to-b from-lightternary to-lightprimary 
+                  dark:from-darkternary dark:to-darkprimary 
+                  col-span-2 row-span-2 rounded-2xl p-5 shadow-lg"
           >
             <div className="text-xl font-extrabold mb-4 border-b border-lightgrey dark:border-darkgrey pb-2">
               Orders by Employees

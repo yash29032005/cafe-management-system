@@ -8,6 +8,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const [employeesandmanagers, setEmployeesandmanagers] = useState([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [totalManagers, setTotalManagers] = useState(0);
   const [totalAdmin, setTotalAdmin] = useState(0);
@@ -56,6 +57,7 @@ export const UserProvider = ({ children }) => {
           { withCredentials: true }
         );
         setEmployees(empResult.data.employees || []);
+        setEmployeesandmanagers(empResult.data.employeesandmanagers || []);
       } catch (err) {
         setEmployees(null);
         console.log(err);
@@ -95,6 +97,7 @@ export const UserProvider = ({ children }) => {
         user,
         setUser,
         employees,
+        employeesandmanagers,
         totalEmployees,
         totalManagers,
         totalAdmin,

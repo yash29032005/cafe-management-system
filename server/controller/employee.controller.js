@@ -4,22 +4,17 @@ const pool = require("../config/db");
 // GET /employee/all
 exports.getAllEmployees = async (req, res) => {
   try {
-    if (req.user.role === "manager") {
-      const [employees] = await pool.query(
-        "SELECT id, name, email, role,salary FROM employees WHERE role=?",
-        ["employee"]
-      );
+    const [employees] = await pool.query(
+      "SELECT id, name, email, role,salary FROM employees WHERE role=?",
+      ["employee"]
+    );
 
-      res.status(200).json({ employees });
-    }
-    if (req.user.role === "admin") {
-      const [employees] = await pool.query(
-        "SELECT id, name, email, role,salary FROM employees WHERE role!=?",
-        ["admin"]
-      );
+    const [employeesandmanagers] = await pool.query(
+      "SELECT id, name, email, role,salary FROM employees WHERE role!=?",
+      ["admin"]
+    );
 
-      res.status(200).json({ employees });
-    }
+    res.status(200).json({ employees, employeesandmanagers });
   } catch (err) {
     console.error(err);
     res.status(500);

@@ -44,7 +44,7 @@ const CheckRequestModal = ({ onClose }) => {
       setProducts((prevProducts) =>
         prevProducts.map((prod) =>
           prod.id === result.data.product_id
-            ? { ...prod, stock: prod.stock + result.data.quantity }
+            ? { ...prod, stock: prod.stock + Number(result.data.quantity) }
             : prod
         )
       );
