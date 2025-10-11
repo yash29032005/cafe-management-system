@@ -15,8 +15,6 @@ This project demonstrates basic CRUD operations, authentication, and database co
 
 ---
 
----
-
 ## ⚙️ Environment Variables
 
 This project uses environment variables to store sensitive information.  
@@ -41,10 +39,13 @@ You will find an `.env.example` file in the root folder.
    npm install
    ```
 3. **Setup Environment Variables**
-   Copy .env.example to .env
-   Update database credentials.
+
+   - Copy `.env.example` to `.env`
+   - Update database credentials
+
 4. **Create Database**
-   Open MySQL and create the required database.
+   - Open MySQL
+   - Create the required database
    ```bash
    CREATE DATABASE yourdbname;
    ```
