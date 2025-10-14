@@ -10,7 +10,6 @@ import { ProductContext } from "../../context/ProductContext";
 
 const InventoryManagement = () => {
   const [openRequestStock, setOpenRequestStock] = useState(false);
-  const [openRemoveProductModal, setOpenRemoveProductModal] = useState(false);
   const [openEditProductModal, setOpenEditProductModal] = useState(false);
 
   const { products, setProducts, loading } = useContext(ProductContext);
@@ -80,7 +79,7 @@ const InventoryManagement = () => {
                     {/* Edit Button */}
                     <span
                       onClick={() => setOpenEditProductModal(item)}
-                      className="absolute top-0 right-40 text-xs bg-lightsecondary dark:bg-darksecondary text-black 
+                      className="absolute top-0 right-30 text-xs bg-lightsecondary dark:bg-darksecondary text-black 
             dark:text-white rounded-md px-4 py-2 cursor-pointer hover:opacity-80 transition"
                     >
                       Edit
@@ -96,7 +95,7 @@ const InventoryManagement = () => {
 
                     <span
                       onClick={() => setOpenRequestStock(item)}
-                      className="absolute top-0 right-10 text-xs bg-lightsecondary dark:bg-darksecondary text-black 
+                      className="absolute top-0 right-0 text-xs bg-lightsecondary dark:bg-darksecondary text-black 
             dark:text-white rounded-md px-4 py-2 cursor-pointer hover:opacity-80 transition"
                     >
                       Request Stock
@@ -107,22 +106,6 @@ const InventoryManagement = () => {
                         onClose={() => {
                           setOpenRequestStock(false);
                         }}
-                      />
-                    )}
-
-                    {/* Remove Button */}
-                    <span
-                      onClick={() => setOpenRemoveProductModal(item)}
-                      className="absolute top-0 right-0 text-xs bg-lightsecondary dark:bg-darksecondary
-            text-black dark:text-white rounded-full px-2 py-2 cursor-pointer hover:opacity-80 transition"
-                    >
-                      <FaMinus />
-                    </span>
-                    {/* Remove Modal */}
-                    {openRemoveProductModal && (
-                      <RemoveProductModal
-                        item={openRemoveProductModal}
-                        onClose={() => setOpenRemoveProductModal(null)}
                       />
                     )}
                   </div>

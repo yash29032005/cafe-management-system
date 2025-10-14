@@ -51,26 +51,6 @@ exports.editProducts = async (req, res) => {
   }
 };
 
-exports.deleteProducts = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const [rows] = await pool.query("DELETE FROM products WHERE id=?", [id]);
-
-    if (rows.affectedRows === 0) {
-      return res.status(400).json({ message: "Product not found" });
-    }
-
-    res
-      .status(200)
-      .json({ product: rows, message: "Profuct removed successfully" });
-  } catch (error) {
-    console.error("Error in product controller:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error while deleting product" });
-  }
-};
-
 exports.insertProducts = async (req, res) => {
   try {
     const { name, category, price, stock } = req.body;

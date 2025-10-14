@@ -20,18 +20,12 @@ router.get(
 
 router.put("/:id", protect, authorizeRoles("manager", "admin"), editProducts);
 
-router.delete(
-  "/:id",
-  protect,
-  authorizeRoles("manager", "admin"),
-  deleteProducts
-);
-
 router.post("/", protect, authorizeRoles("admin"), insertProducts);
+
 router.get(
   "/summary",
   protect,
-  authorizeRoles("admin", "manager"),
+  authorizeRoles("manager", "admin"),
   getProductSummary
 );
 router.put("/:id/toggle", protect, authorizeRoles("admin"), togicLogic);

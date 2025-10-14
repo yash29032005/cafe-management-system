@@ -11,7 +11,6 @@ import EditProductModal from "../EditProductModal";
 import { ProductContext } from "../../context/ProductContext";
 
 const ProductManagement = () => {
-  const [openRemoveProductModal, setOpenRemoveProductModal] = useState(false);
   const [openAddProductModal, setOpenAddProductModal] = useState(false);
   const [openEditProductModal, setOpenEditProductModal] = useState(false);
 
@@ -99,7 +98,10 @@ const ProductManagement = () => {
                 <p className="mt-1 font-semibold text-black dark:text-white">
                   ₹{item.price}
                 </p>
-                <span className="absolute bottom-0 right-0 text-xs bg-lightprimary dark:bg-darkprimary text-black dark:text-white rounded-full px-3 py-1">
+                <span
+                  className="absolute bottom-5 right-5 text-xs bg-lightprimary dark:bg-darkprimary 
+            text-black dark:text-white rounded-full px-3 py-1"
+                >
                   Stock: {item.stock}
                 </span>
 
@@ -118,7 +120,7 @@ const ProductManagement = () => {
                 {/* Edit Button */}
                 <span
                   onClick={() => setOpenEditProductModal(item)}
-                  className="absolute top-50 right-16 text-xs bg-lightsecondary dark:bg-darksecondary text-black dark:text-white rounded-md px-4 py-2 cursor-pointer hover:opacity-80 transition"
+                  className="absolute top-50 right-5 text-xs bg-lightsecondary dark:bg-darksecondary text-black dark:text-white rounded-md px-4 py-2 cursor-pointer hover:opacity-80 transition"
                 >
                   Edit
                 </span>
@@ -128,21 +130,6 @@ const ProductManagement = () => {
                     item={openEditProductModal}
                     setProducts={setProducts}
                     onClose={() => setOpenEditProductModal(false)}
-                  />
-                )}
-
-                {/* Remove Button */}
-                <span
-                  onClick={() => setOpenRemoveProductModal(item)}
-                  className="absolute top-50 right-5 text-xs bg-lightsecondary dark:bg-darksecondary text-black dark:text-white rounded-full px-2 py-2"
-                >
-                  <FaMinus />
-                </span>
-
-                {openRemoveProductModal && (
-                  <RemoveProductModal
-                    item={openRemoveProductModal}
-                    onClose={() => setOpenRemoveProductModal(false)}
                   />
                 )}
               </div>
